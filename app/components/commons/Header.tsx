@@ -1,34 +1,33 @@
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, StatusBar } from 'react-native';
 import { Image } from 'expo-image';
-
-const LogoImage = require('../../../assets/images/logo-icon.png');
+import style from '@/styles/global';
 
 export default function Header() {
+  // Obtenir le statut de la barre d'état pour les ajustements
+  const statusBarHeight = Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 0;
+
   return (
-    <View style={styles.header}>
-      <Image 
-        source={LogoImage} 
-        style={styles.logo}
-        contentFit="contain"
-      />
-    </View>
+      <View style={[styles.header, { borderBottomColor: style.color.secondary }]}>
+        <Image
+          source={require('../../../assets/images/logo-icon.png')}
+          style={styles.logo}
+          contentFit="contain"
+        />
+      </View>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
-    height: 60,
-    backgroundColor: '#1a1a1a',
+    height: 80, // Hauteur fixe du header (sans compter la barre d'état)
+    width: '100%',
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 15,
+    alignItems: 'center',      // Centre vertical
+    justifyContent: 'center',  // Centre horizontal
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
   },
   logo: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 100,
+    height: 80,
   },
-}); 
+});
