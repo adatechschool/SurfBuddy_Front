@@ -1,9 +1,10 @@
 import { View, StyleSheet, Platform } from 'react-native';
 import { Image } from 'expo-image';
+import React, { Component } from 'react';
 
 const LogoImage = require('../../../assets/images/logo-icon.png');
 
-export default function Header() {
+function Header() {
   return (
     <View style={styles.header}>
       <Image 
@@ -32,3 +33,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 }); 
+
+export default Header
