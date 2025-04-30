@@ -4,7 +4,7 @@
     "slug": "surfbuddy_front",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.icon.png",
+    "icon": "./assets/images/logo-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -20,7 +20,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/logo.icon.png"
+      "favicon": "./assets/images/logo-icon.png"
     },
     "plugins": [
       "expo-router",

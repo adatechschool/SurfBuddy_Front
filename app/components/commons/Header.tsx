@@ -1,7 +1,7 @@
 import { View, StyleSheet, Platform } from 'react-native';
 import { Image } from 'expo-image';
 
-const LogoImage = require('../../assets/images/logo.icon.png');
+const LogoImage = require('../../../assets/images/logo-icon.png');
 
 export default function Header() {
   return (
