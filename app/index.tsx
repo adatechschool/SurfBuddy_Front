@@ -1,15 +1,11 @@
 import { Text, View } from "react-native";
+import SpotCard from "./components/homeScreen/SpotCard";
+import style from "@/styles/global";
 
-export default function Index() {
+export default function HomeScreen() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+    <View style={{ backgroundColor: style.color.background }}>
+      <SpotCard />
     </View>
   );
 }
