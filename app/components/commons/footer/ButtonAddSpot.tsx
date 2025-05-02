@@ -10,6 +10,7 @@ type Props = {
 };
 
 function ButtonAddSpot({ onPress }: Props) {
+ 
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <View style={styles.iconContainer}>

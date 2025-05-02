@@ -5,6 +5,7 @@ import global from '../../../../styles/global'; // Import des styles globaux
 import ButtonLocalisation from './ButtonLocalisation';
 import ButtonAddSpot from './ButtonAddSpot';
 import ButtonProfile from './ButtonProfile';
+import { useRouter } from 'expo-router';
 
 
 type NavbarProps = {
@@ -12,6 +13,7 @@ type NavbarProps = {
 };
 
 function Navbar({ onButtonPress }: NavbarProps) {
+  const router = useRouter(); 
   return (
     <View
       style={[
@@ -20,17 +22,30 @@ function Navbar({ onButtonPress }: NavbarProps) {
       ]}
     >
       {/* Bouton 1 */}
-      <ButtonHome onPress={() => onButtonPress && onButtonPress('Accueil')} />
+      <ButtonHome onPress={() => {
+  if (onButtonPress) onButtonPress('Accueil');
+  router.push('/screens/HomeScreen');
+}} />
 
       {/* Bouton 2 */}
-      <ButtonLocalisation onPress={() => onButtonPress && onButtonPress('localisation')} />
+      <ButtonLocalisation    onPress={() => {
+  if (onButtonPress) onButtonPress('Accueil');
+  router.push('/screens/DetailsScreen');
+}} />
+   
 
       {/* Bouton 3 */}
-      <ButtonAddSpot onPress={() => onButtonPress && onButtonPress('ajout-spot')} />
+      <ButtonAddSpot onPress={() => {
+            if (onButtonPress) onButtonPress('Accueil');
+            router.push('/screens/AddSpotScreen');
+          }}/>
 
         
       {/* Bouton 4 */}
-      <ButtonProfile onPress={() => onButtonPress && onButtonPress('Profil')} />
+      <ButtonProfile onPress={() => {
+          if (onButtonPress) onButtonPress('Accueil');
+          router.push('/screens/ProfileScreen');
+        }} />
     </View>
   );
 }
