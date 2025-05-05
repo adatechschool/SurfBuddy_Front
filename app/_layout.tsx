@@ -1,14 +1,15 @@
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useCallback } from "react";
+import { View, StyleSheet } from "react-native";
 import {
   useFonts,
   Roboto_400Regular,
   Roboto_700Bold,
-} from '@expo-google-fonts/roboto';
-import Header from './components/commons/Header'; // Votre Header
-import Navbar from './components/commons/footer/Navbar'; // Votre Navbar
+} from "@expo-google-fonts/roboto";
+import style from "@/styles/global";
+import Header from "./components/commons/Header";
+import Navbar from "./components/commons/footer/Navbar"; // Votre Navbar
 
 // Empêche l'app de cacher le splash avant que les polices soient prêtes
 SplashScreen.preventAutoHideAsync();
@@ -50,7 +51,7 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1, // Prend toute la hauteur de l'écran
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
   },
   content: {
     flex: 1, // Prend tout l'espace disponible entre le header et le footer
