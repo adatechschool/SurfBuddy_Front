@@ -2,10 +2,9 @@ import { View, StyleSheet, Platform, StatusBar, SafeAreaView } from 'react-nativ
 import { Image } from 'expo-image';
 import style from '@/styles/global';
 
-export default function Header() {
-  // // Obtenir le statut de la barre d'état pour les ajustements
-  // const statusBarHeight = Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 0;
+const LogoImage = require('../../../assets/images/logo-icon.png');
 
+export default function Header() {
   return (
     <>
     <StatusBar 
@@ -39,4 +38,4 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-});
+}); 

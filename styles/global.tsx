@@ -5,7 +5,6 @@ const style = {
     background: "#ffffff",
     text: "#000000",
   },
-
   fonts: {
     regular: "Roboto_400Regular",
     bold: "Roboto_700Bold",
