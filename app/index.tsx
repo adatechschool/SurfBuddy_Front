@@ -1,19 +1,11 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import { Text, View } from "react-native";
+import SpotCard from "./components/homeScreen/SpotCard";
+import style from "@/styles/global";
 
-
-export default function Index() {
-  return <View style={styles.container}> 
-  {/* Votre contenu ici */} 
-  </View>;
+export default function HomeScreen() {
+  return (
+    <View style={{ backgroundColor: style.color.background }}>
+      <SpotCard />
+    </View>
+  );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-});
