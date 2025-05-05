@@ -1,34 +1,62 @@
-import React from 'react';
-import { View, Text, Image, FlatList, StyleSheet, Dimensions } from 'react-native';
-import data from '../../../api.json';
-import style from '@/styles/global';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import airtableService from '@/airtableService';
+import type { AirtableRecord } from '@/airtableService';
+import style from '@/styles/global'; // À utiliser si nécessaire dans les styles
 
 const { width } = Dimensions.get('window');
 
 export default function SpotCard() {
-  return (
-     <FlatList
-    data={data.records}
-    keyExtractor={(item, index) => index.toString()}
-    contentContainerStyle={styles.listContent}
-    renderItem={({ item }) => {
-      const fields = item.fields;
-      const pictureUrl = fields.Photos?.[0]?.url?.replace(/[<>;]/g, '') ?? '';
-      const surfBreak = fields["Surf Break"]?.[0] ?? 'Inconnu';
-      const address = fields.Address ?? 'Adresse non disponible';
+  const [records, setRecords] = useState<AirtableRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-      return (
-        <View style={styles.card}>
-          {pictureUrl ? (
-            <Image source={{ uri: pictureUrl }} style={styles.image} resizeMode="cover" />
-          ) : null}
-          <Text style={styles.title}>{surfBreak}</Text>
-          <Text style={styles.address}>{address}</Text>
-        </View>
-      );
-    }}
-  />
-);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await airtableService.getAllDestinations();
+        setRecords(data);
+      } catch (err) {
+        setError('Erreur lors du chargement des spots.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#000" style={{ marginTop: 20 }} />;
+  }
+
+  if (error) {
+    return <Text style={{ color: 'red', textAlign: 'center', marginTop: 20 }}>{error}</Text>;
+  }
+
+  return (
+    <FlatList
+      data={records}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={styles.listContent}
+      renderItem={({ item }) => {
+        const fields = item.fields;
+        const pictureUrl = fields.Photos?.[0]?.url?.replace(/[<>;]/g, '') ?? '';
+        const surfBreak = fields["Surf Break"]?.[0] ?? 'Inconnu';
+        const address = fields.Address ?? 'Adresse non disponible';
+
+        return (
+          <View style={styles.card}>
+            {pictureUrl ? (
+              <Image source={{ uri: pictureUrl }} style={styles.image} resizeMode="cover" />
+            ) : null}
+            <Text style={styles.title}>{surfBreak}</Text>
+            <Text style={styles.address}>{address}</Text>
+          </View>
+        );
+      }}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
