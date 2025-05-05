@@ -39,7 +39,7 @@ function Navbar({ onButtonPress }: NavbarProps) {
       {/* Bouton 2 */}
       <ButtonLocalisation    
         onPress={() => {
-          if (onButtonPress) onButtonPress('Accueil');
+          if (onButtonPress) onButtonPress('Localisation');
           router.push('/screens/DetailsScreen');
         }} 
       />
@@ -47,7 +47,7 @@ function Navbar({ onButtonPress }: NavbarProps) {
       {/* Bouton 3 */}
       <ButtonAddSpot 
         onPress={() => {
-          if (onButtonPress) onButtonPress('Accueil');
+          if (onButtonPress) onButtonPress('AddSpot');
           router.push('/screens/AddSpotScreen');
         }}
       />
@@ -55,7 +55,7 @@ function Navbar({ onButtonPress }: NavbarProps) {
       {/* Bouton 4 */}
       <ButtonProfile 
         onPress={() => {
-          if (onButtonPress) onButtonPress('Accueil');
+          if (onButtonPress) onButtonPress('Profile');
           router.push('/screens/ProfileScreen');
         }} 
       />
