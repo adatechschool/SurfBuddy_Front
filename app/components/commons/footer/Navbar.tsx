@@ -48,7 +48,7 @@ function Navbar({ onButtonPress }: NavbarProps) {
       <ButtonAddSpot 
         onPress={() => {
           if (onButtonPress) onButtonPress('Accueil');
-          router.push('/screens/AddSpotScreen');
+          router.push('/screens/LoginScreen');
         }}
       />
         
