@@ -1,5 +1,5 @@
 // src/services/airtableService.ts
-import axios from 'axios';
+import axios from 'axios'; // Librairie qui permet de faire des appels API
 import { AIRTABLE_API_TOKEN } from '@env';
 
 // Définition des types
