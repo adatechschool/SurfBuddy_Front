@@ -32,7 +32,7 @@ function Navbar({ onButtonPress }: NavbarProps) {
       <ButtonHome 
         onPress={() => {
           if (onButtonPress) onButtonPress('Accueil');
-          router.push('/screens/HomeScreen');
+          router.push('/');
         }} 
       />
 
