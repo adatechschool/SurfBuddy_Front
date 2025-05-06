@@ -4,53 +4,22 @@ import airtableService from '@/airtableService';
 import type { AirtableRecord } from '@/airtableService';
 import style from '@/styles/global';
 import SpotCardImage from './SpotCardImage';
-import SpotCarddetails from './SpotCardDetails';
+import SpotCardDetails from './SpotCardDetails';
 
 const { width } = Dimensions.get('window');
 
-
-export default function SpotCard() {
-  const [records, setRecords] = useState<AirtableRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await airtableService.getAllDestinations();
-        setRecords(data);
-      } catch (err) {
-        setError('Erreur lors du chargement des spots.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <ActivityIndicator size="large" color="#000" style={{ marginTop: 20 }} />;
-  }
-
-  if (error) {
-    return <Text style={{ color: 'red', textAlign: 'center', marginTop: 20 }}>{error}</Text>;
-  }
-
-  return (
-    <FlatList
-      data={records}
-      keyExtractor={(item) => item.id}
-      contentContainerStyle={styles.listContent}
-      renderItem={({ item }) => (
-        <View style= {styles.card}>
-          <SpotCardImage item={item} />
-          <SpotCarddetails item={item} />
-        </View>
-      )}
-    />
-  );
+interface SpotCardProps {
+  spot: AirtableRecord;
 }
+
+const SpotCard = ({ spot }: SpotCardProps) => {
+  return (
+    <View style={styles.card}>
+      <SpotCardImage item={spot} />
+      <SpotCardDetails item={spot} />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   listContent: {
@@ -74,3 +43,5 @@ const styles = StyleSheet.create({
   },
   
 });
+
+export default SpotCard;
