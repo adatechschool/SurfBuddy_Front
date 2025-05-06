@@ -9,7 +9,7 @@ function ButtonDelete({ onPress }: Props) {
   return (
     <TouchableOpacity style={styles.deleteButton} onPress={onPress}>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>Supprimer</Text>
+        <Text style={styles.text}>Delete</Text>
       </View>
     </TouchableOpacity>
   );

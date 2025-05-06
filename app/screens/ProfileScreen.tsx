@@ -10,15 +10,15 @@ const ProfileScreen = () => {
   return (
     <View style={styles.screen}>
       <Text style={[styles.title, { color: globalStyle.color.secondary }]}>
-        Mon Profil :
+        My Profile :
       </Text> 
       <ProfileImage />
       <ProfileContent />
 
       {/* Conteneur des boutons */}
       <View style={styles.buttonContainer}>
-        <ButtonUpdate onPress={() => console.log('Modifier')} />
-        <ButtonDelete onPress={() => console.log('Supprimer')} />
+        <ButtonUpdate onPress={() => console.log('Update')} />
+        <ButtonDelete onPress={() => console.log('Delete')} />
       </View>
     </View>
   );

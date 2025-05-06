@@ -9,7 +9,7 @@ function ButtonUpdate({ onPress }: Props) {
   return (
     <TouchableOpacity style={styles.updateButton} onPress={onPress}>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>Modifier</Text>
+        <Text style={styles.text}>Update</Text>
       </View>
     </TouchableOpacity>
   );
