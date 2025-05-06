@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import airtableService from '@/airtableService';
 import type { AirtableRecord } from '@/airtableService';
-import style from '@/styles/global'; // À utiliser si nécessaire dans les styles
+import style from '@/styles/global';
+import SpotCardImage from './SpotCardImage';
+import SpotCarddetails from './SpotCardDetails';
 
 const { width } = Dimensions.get('window');
+
 
 export default function SpotCard() {
   const [records, setRecords] = useState<AirtableRecord[]>([]);
@@ -39,22 +42,12 @@ export default function SpotCard() {
       data={records}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.listContent}
-      renderItem={({ item }) => {
-        const fields = item.fields;
-        const pictureUrl = fields.Photos?.[0]?.url?.replace(/[<>;]/g, '') ?? '';
-        const surfBreak = fields["Surf Break"]?.[0] ?? 'Inconnu';
-        const address = fields.Address ?? 'Adresse non disponible';
-
-        return (
-          <View style={styles.card}>
-            {pictureUrl ? (
-              <Image source={{ uri: pictureUrl }} style={styles.image} resizeMode="cover" />
-            ) : null}
-            <Text style={styles.title}>{surfBreak}</Text>
-            <Text style={styles.address}>{address}</Text>
-          </View>
-        );
-      }}
+      renderItem={({ item }) => (
+        <View style= {styles.card}>
+          <SpotCardImage item={item} />
+          <SpotCarddetails item={item} />
+        </View>
+      )}
     />
   );
 }
@@ -79,22 +72,5 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3, // pour Android
   },
-  image: {
-    width: '100%',
-    height: width * 0.5,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 5,
-  },
-  address: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
+  
 });
