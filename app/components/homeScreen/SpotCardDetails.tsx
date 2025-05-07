@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import airtableService from '@/airtableService';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import type { AirtableRecord } from '@/airtableService';
-import style from '@/styles/global'; 
+import style from '@/styles/global';
 
-
-export default function SpotCarddetails({ item }: { item: AirtableRecord }) {
+export default function SpotCardDetails({ item }: { item: AirtableRecord }) {
   const surfBreak = item.fields["Surf Break"]?.[0] ?? 'Inconnu';
   const address = item.fields.Address ?? 'Adresse non disponible';
 
   return (
-    <View>
+    <View style={styles.container}>
       <Text style={styles.title}>{surfBreak}</Text>
       <Text style={styles.address}>{address}</Text>
     </View>
@@ -18,6 +16,11 @@ export default function SpotCarddetails({ item }: { item: AirtableRecord }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    alignItems: 'center',
+    padding: 8,
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',

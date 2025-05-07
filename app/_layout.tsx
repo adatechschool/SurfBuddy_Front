@@ -10,7 +10,7 @@ import {
 } from "@expo-google-fonts/roboto";
 import style from "@/styles/global";
 import Header from "./components/commons/Header";
-import Navbar from "./components/commons/footer/Navbar"; // Votre Navbar
+import Navbar from "./components/commons/footer/Navbar";
 
 // Empêche l'app de cacher le splash avant que les polices soient prêtes
 SplashScreen.preventAutoHideAsync();
