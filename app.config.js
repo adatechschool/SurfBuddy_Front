@@ -1,0 +1,55 @@
+module.exports = {
+  expo: {
+    name: "surfbuddy_front",
+    slug: "surfbuddy_front",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/images/logo-icon.png",
+    scheme: "myapp",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "com.votreentreprise.surfbuddy",
+      config: {
+        googleMaps: {
+          apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY_IOS
+        }
+      }
+    },
+    android: {
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/logo-icon.png",
+        backgroundColor: "#ffffff"
+      },
+      package: "com.votreentreprise.surfbuddy",
+      config: {
+        googleMaps: {
+          apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY_ANDROID
+        }
+      }
+    },
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/images/logo-icon.png"
+    },
+    plugins: [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser"
+    ],
+    experiments: {
+      typedRoutes: true
+    }
+  }
+}; 
