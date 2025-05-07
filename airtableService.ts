@@ -1,6 +1,8 @@
 // src/services/airtableService.ts
 import axios from 'axios'; // Librairie qui permet de faire des appels API
-import { AIRTABLE_API_TOKEN } from '@env';
+
+// Utiliser directement process.env avec le préfixe EXPO_PUBLIC_
+const AIRTABLE_API_TOKEN = process.env.EXPO_PUBLIC_AIRTABLE_API_TOKEN;
 
 // Définition des types
 interface SurfDestinationFields {
