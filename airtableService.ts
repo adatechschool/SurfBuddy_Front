@@ -175,5 +175,25 @@ const airtableService = {
   getSpots
 };
 
+async function getSpotById(id: string): Promise<AirtableRecord> {
+  const response = await fetch(`https://api.airtable.com/v0/ton_base_id/Spots/${id}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.EXPO_PUBLIC_AIRTABLE_API_KEY}`,
+    },
+  });
+
+  if (!response.ok) throw new Error('Erreur récupération spot');
+
+  const data = await response.json();
+  return {
+    id: data.id,
+    ...data.fields,
+  };
+}
+
+
+
+
+
 export default airtableService;
 export type { AirtableRecord };

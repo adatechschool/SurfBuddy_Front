@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
-import airtableService from '@/airtableService';
+import React from 'react';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import { Link } from 'expo-router';
 import type { AirtableRecord } from '@/airtableService';
 import style from '@/styles/global';
 import SpotCardImage from './SpotCardImage';
@@ -14,22 +14,19 @@ interface SpotCardProps {
 
 const SpotCard = ({ spot }: SpotCardProps) => {
   return (
-    <View style={styles.card}>
-      <SpotCardImage item={spot} />
-      <SpotCardDetails item={spot} />
-    </View>
+    <Link href={`/details/${spot.id}`} asChild>
+  <View style={styles.card}>
+    <SpotCardImage item={spot} />
+    <SpotCardDetails item={spot} />
+  </View>
+</Link>
   );
 };
 
 const styles = StyleSheet.create({
-  listContent: {
-    paddingBottom: 20,
-    paddingHorizontal: 10,
-  },
   card: {
     width: width * 0.9,
     marginVertical: 30,
-    // marginHorizontal: 10,
     padding: 20,
     backgroundColor: style.color?.primary || '#f0f0f0',
     borderRadius: 12,
@@ -41,7 +38,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3, // pour Android
   },
-  
 });
 
 export default SpotCard;
