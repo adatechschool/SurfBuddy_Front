@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import type { AirtableRecord } from '@/airtableService';
 import style from '@/styles/global';
 import SpotCardImage from './SpotCardImage';
@@ -10,15 +11,26 @@ interface SpotCardProps {
 }
 
 const SpotCard = ({ spot }: SpotCardProps) => {
-  return (
-    <View style={styles.card}>
-      <SpotCardImage item={spot} />
-      <SpotCardDetails item={spot} />
-    </View>
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push({
+      pathname: '/screens/DetailsScreen',
+      params: { id: spot.id }
+    });
+  };
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
+
+  return (
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
+      <View style={styles.card}>
+        <SpotCardImage item={spot} />
+        <SpotCardDetails item={spot} />
+      </View>
   card: {
     width: '100%',
     padding: 20,

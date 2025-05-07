@@ -172,7 +172,65 @@ const airtableService = {
   },
   
   // Ajout de la fonction getSpots à l'objet airtableService
-  getSpots
+  getSpots,
+
+  // Ajouter cette méthode à votre objet airtableService
+  getSpotById: async (id: string): Promise<AirtableRecord | null> => {
+    try {
+      const response = await axios.get(`${API_URL}/${id}`, { headers });
+      return response.data;
+    } catch (error) {
+      console.error("Erreur lors de la récupération du spot par ID:", error);
+      return null;
+    }
+  },
+
+  // Ajouter cette fonction à votre service Airtable
+  geocodeAddresses: async (spots: AirtableRecord[]): Promise<AirtableRecord[]> => {
+    try {
+      // Importer Location uniquement lorsque cette fonction est appelée
+      const Location = await import('expo-location');
+      
+      // Demander la permission de géolocalisation
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.warn("Permission de localisation refusée");
+        return spots;
+      }
+      
+      // Traiter chaque spot pour ajouter les coordonnées
+      const spotsWithCoordinates = await Promise.all(
+        spots.map(async (spot) => {
+          // Si le spot a déjà des coordonnées, on les garde
+          if (spot.fields.Latitude && spot.fields.Longitude) {
+            return spot;
+          }
+          
+          // Si le spot a une adresse, on la géocode
+          if (spot.fields.Address) {
+            try {
+              const geocode = await Location.geocodeAsync(spot.fields.Address);
+              
+              if (geocode.length > 0) {
+                // Ajouter les coordonnées au spot
+                spot.fields.Latitude = geocode[0].latitude.toString();
+                spot.fields.Longitude = geocode[0].longitude.toString();
+              }
+            } catch (error) {
+              console.error(`Erreur lors du géocodage de l'adresse pour le spot ${spot.id}:`, error);
+            }
+          }
+          
+          return spot;
+        })
+      );
+      
+      return spotsWithCoordinates;
+    } catch (error) {
+      console.error("Erreur lors du géocodage des adresses:", error);
+      return spots;
+    }
+  },
 };
 
 export default airtableService;
