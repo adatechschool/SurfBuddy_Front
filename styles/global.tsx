@@ -3,7 +3,7 @@ const style = {
     primary: "#F2EFE7",
     secondary: "#006A71",
     background: "#ffffff",
-    text: "#000000",
+    text: "#1B1717",
   },
   fonts: {
     regular: "Roboto_400Regular",
