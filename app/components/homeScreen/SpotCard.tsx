@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import type { AirtableRecord } from '@/airtableService';
 import style from '@/styles/global';
@@ -19,11 +19,6 @@ const SpotCard = ({ spot }: SpotCardProps) => {
       params: { id: spot.id }
     });
   };
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
 
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
@@ -31,6 +26,11 @@ const styles = StyleSheet.create({
         <SpotCardImage item={spot} />
         <SpotCardDetails item={spot} />
       </View>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
   card: {
     width: '100%',
     padding: 20,
