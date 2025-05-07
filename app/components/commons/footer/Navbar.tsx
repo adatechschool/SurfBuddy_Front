@@ -56,8 +56,8 @@ function Navbar({ onButtonPress }: NavbarProps) {
       {/* Bouton 4 */}
       <ButtonProfile 
         onPress={() => {
-          if (onButtonPress) onButtonPress('Accueil');
-          router.push('/screens/ProfileScreen');
+          if (onButtonPress) onButtonPress('Profile');
+          router.push('/(app)/ProfileScreen');
         }} 
       />
     </View>
