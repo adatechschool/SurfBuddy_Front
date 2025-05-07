@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ProfileImage from '../components/profileScreen/ProfileImage'; 
 import ProfileContent from '../components/profileScreen/ProfileContent'; 
-import ButtonUpdate from '../components/profileScreen/ButtonUpdate'; 
-import ButtonDelete from '../components/profileScreen/ButtonDelete';
+import ButtonUpdate from '../components/commons/buttons/ButtonUpdate'; 
+import ButtonDelete from '../components/commons/buttons/ButtonDelete';
 import globalStyle from '../../styles/global'; // Assure-toi que l'import est correct
 
 const ProfileScreen = () => {
