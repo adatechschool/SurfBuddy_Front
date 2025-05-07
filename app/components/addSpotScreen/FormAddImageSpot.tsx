@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Image, StyleSheet } from "react-native";
 
 type SpotImageProps = {
   imageUri?: string | null;
@@ -8,9 +8,13 @@ type SpotImageProps = {
 const FormAddImageSpot = ({ imageUri }: SpotImageProps) => {
   return (
     <View style={styles.container}>
-      <Image 
-        source={imageUri ? { uri: imageUri } : require('../../../assets/placeholder-image.png')} 
-        style={styles.image} 
+      <Image
+        source={
+          imageUri
+            ? { uri: imageUri }
+            : require("../../../assets/images/logo-icon.png")
+        }
+        style={styles.image}
       />
     </View>
   );
@@ -18,7 +22,7 @@ const FormAddImageSpot = ({ imageUri }: SpotImageProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 5,
   },
   image: {
