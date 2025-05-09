@@ -13,18 +13,20 @@ type User = {
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>; // Corrigé ici
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   user: User | null;
   isLoading: boolean;
+  isAuthenticated: boolean; // Ajout de la propriété isAuthenticated
 };
 
 // Création du contexte avec des valeurs par défaut
 const AuthContext = createContext<AuthContextType>({
   signIn: async () => {},
   signOut: () => {},
-  setUser: () => {}, // Correction ici
+  setUser: () => {},
   user: null,
   isLoading: true,
+  isAuthenticated: false, // Valeur par défaut
 });
 
 // Hook pour utiliser le contexte d'authentification
@@ -40,6 +42,9 @@ export function useAuth() {
 export function AuthProvider({ children }: PropsWithChildren) {
   const [[isLoading, storedUser], setStoredUser] = useStorageState('user');
   const [user, setUser] = useState<User | null>(storedUser ? JSON.parse(storedUser) : null);
+  
+  // Calculer isAuthenticated en fonction de la présence d'un utilisateur
+  const isAuthenticated = user !== null;
 
   // Mise à jour du state local quand le storage change
   useEffect(() => {
@@ -74,7 +79,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   return (
-    <AuthContext.Provider value={{ signIn, signOut, user, isLoading, setUser }}>
+    <AuthContext.Provider value={{ signIn, signOut, user, isLoading, setUser, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
