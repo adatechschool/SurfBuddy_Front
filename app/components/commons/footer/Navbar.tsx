@@ -15,6 +15,7 @@ type NavbarProps = {
 function Navbar({ onButtonPress }: NavbarProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
   const currentPath = usePathname();
   
   // Fonction pour déterminer si un bouton est actif en fonction du chemin
@@ -34,7 +35,8 @@ function Navbar({ onButtonPress }: NavbarProps) {
         {
           backgroundColor: global.color.primary,
           borderTopColor: global.color.secondary,
-          paddingBottom: Math.max(insets.bottom, 5)
+          // Ajouter du padding en bas pour respecter la zone de sécurité
+          paddingBottom: Math.max(insets.bottom, 5),
         },
       ]}
     >
@@ -80,9 +82,9 @@ function Navbar({ onButtonPress }: NavbarProps) {
 const styles = StyleSheet.create({
   navbar: {
     minHeight: 60, // Hauteur minimale de la navbar
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
     borderTopWidth: 1,
   },
 });
