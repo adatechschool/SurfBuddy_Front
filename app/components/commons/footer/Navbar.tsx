@@ -64,7 +64,7 @@ function Navbar({ onButtonPress }: NavbarProps) {
           if (onButtonPress) onButtonPress("Accueil");
           router.push("/screens/LoginScreen");
         }}
-        isActive={isActive('/screens/LoginScreen')}
+        isActive={isActive('/screens/AddSpotScreen')}
       />
       
       {/* Bouton 4 */}
