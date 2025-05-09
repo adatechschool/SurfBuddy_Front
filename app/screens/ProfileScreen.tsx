@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import ProfileImage from '../components/profileScreen/ProfileImage'; 
 import ProfileContent from '../components/profileScreen/ProfileContent'; 
 import ButtonUpdate from '../components/profileScreen/ButtonUpdate'; 
@@ -25,7 +25,7 @@ const ProfileScreen = () => {
   if (!user) return null;
 
   return (
-    <View style={styles.screen}>
+    <ScrollView contentContainerStyle={styles.contentContainer}>
       <Text style={[styles.title, { color: globalStyle.color.secondary }]}>
         My Profile :
       </Text> 
@@ -36,12 +36,12 @@ const ProfileScreen = () => {
         <ButtonUpdate onPress={() => console.log('Update')} />
         <ButtonDelete onPress={() => console.log('Delete')} />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  screen: {
+  contentContainer: {
     flex: 1,
     alignItems: 'center',
     padding: 20,

@@ -52,7 +52,7 @@ export default function SignIn() {
       
       <TouchableOpacity 
         style={styles.registerLink}
-        onPress={() => router.push('/')}
+        onPress={() => router.push('/screens/LoginScreen')}
       >
         <Text style={styles.registerText}>
           No account yet?{' '}
