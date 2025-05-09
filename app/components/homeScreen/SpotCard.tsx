@@ -1,51 +1,48 @@
 import React from 'react';
-import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
-import data from '../../../api.json';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import type { AirtableRecord } from '@/airtableService';
 import style from '@/styles/global';
+import SpotCardImage from './SpotCardImage';
+import SpotCardDetails from './SpotCardDetails';
 
-export default function SpotCard() {
-  return (
-    <FlatList
-      data={data.records}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => {
-        const pictureUrl = item.Photos.replace(/[<>;]/g, '');
-        return (
-          <View style={styles.card}>
-            <Image source={{ uri: pictureUrl }} style={styles.image} />
-            <Text style={styles.title}>{item["Surf Break"]}</Text>
-            <Text style={styles.address}>{item.Address}</Text>
-          </View>
-        );
-      }}
-    />
-  );
+interface SpotCardProps {
+  spot: AirtableRecord;
 }
 
-const styles = StyleSheet.create({
+const SpotCard = ({ spot }: SpotCardProps) => {
+  const router = useRouter();
 
-    card: {
-      margin: 10,
-      padding: 12,
-      backgroundColor: style.color.primary,
-      borderRadius: 12,
-      alignItems: 'center',
-    },
-    image: {
-      width: 300,
-      height: 200,
-      borderRadius: 8,
-      marginBottom: 10,
-    },
-    title: {
-      fontSize: 20,
-      fontFamily: style.fonts.bold,
-      color: style.color.text,
-    },
-    address: {
-      fontSize: 16,
-      fontFamily: style.fonts.regular,
-      color: style.color.text,
-    },
-  });
-  
+  const handlePress = () => {
+    router.push({
+      pathname: '/screens/DetailsScreen',
+      params: { id: spot.id }
+    });
+  };
+
+  return (
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
+      <View style={styles.card}>
+        <SpotCardImage item={spot} />
+        <SpotCardDetails item={spot} />
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  card: {
+    width: '100%',
+    padding: 20,
+    backgroundColor: style.color?.primary || '#f0f0f0',
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 10, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // pour Android
+  },
+});
+
+export default SpotCard;

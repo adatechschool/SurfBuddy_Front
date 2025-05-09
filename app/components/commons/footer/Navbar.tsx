@@ -32,23 +32,24 @@ function Navbar({ onButtonPress }: NavbarProps) {
       <ButtonHome 
         onPress={() => {
           if (onButtonPress) onButtonPress('Accueil');
-          router.push('/screens/HomeScreen');
+          router.push('/');
         }} 
       />
+
 
       {/* Bouton 2 */}
       <ButtonLocalisation    
         onPress={() => {
           if (onButtonPress) onButtonPress('Localisation');
-          router.push('/screens/DetailsScreen');
+          router.push('/screens/MapScreen');
         }} 
       />
    
       {/* Bouton 3 */}
       <ButtonAddSpot 
         onPress={() => {
-          if (onButtonPress) onButtonPress('AddSpot');
-          router.push('/screens/AddSpotScreen');
+          if (onButtonPress) onButtonPress('Add Spot');
+          router.push('/(app)/AddSpotScreen');
         }}
       />
         
@@ -56,7 +57,7 @@ function Navbar({ onButtonPress }: NavbarProps) {
       <ButtonProfile 
         onPress={() => {
           if (onButtonPress) onButtonPress('Profile');
-          router.push('/screens/ProfileScreen');
+          router.push('/(app)/ProfileScreen');
         }} 
       />
     </View>

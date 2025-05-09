@@ -9,12 +9,24 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.votreentreprise.surfbuddy",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDkn-Vu2JhdmAtMHFDYCXRZgkpI3rZ9-QE"
+        }
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "../../assets/images/logo-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.votreentreprise.surfbuddy",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDkn-Vu2JhdmAtMHFDYCXRZgkpI3rZ9-QE"
+        }
       }
     },
     "web": {
@@ -34,7 +46,8 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
