@@ -15,6 +15,7 @@ type NavbarProps = {
 function Navbar({ onButtonPress }: NavbarProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
   const currentPath = usePathname();
   
   // Fonction pour déterminer si un bouton est actif en fonction du chemin

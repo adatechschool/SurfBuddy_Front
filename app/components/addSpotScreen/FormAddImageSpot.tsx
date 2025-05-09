@@ -7,7 +7,10 @@ type SpotImageProps = {
 
 const FormAddImageSpot = ({ imageUri }: SpotImageProps) => {
   return (
+<<<<<<< HEAD
     
+=======
+>>>>>>> 19418bfa57c07be60fa0c2a84426f03cc5c00b52
     <View style={styles.container}>
       <Image
         source={
