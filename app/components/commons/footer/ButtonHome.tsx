@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import style from '@/styles/global';
 
 // Définition de la constante IconSource
@@ -22,13 +22,8 @@ function ButtonHome({ onPress, isActive = false }: Props) {
         ]} 
         onPress={onPress}
       >
-        <View style={styles.iconContainer}>
-          <Image 
-            source={IconSource} 
-            style={styles.icon} 
-            contentFit="contain"
-          />
-        </View>
+        <Ionicons name="home" size={32} color="#00A896" />
+
       </TouchableOpacity>
       
       {/* Indicateur d'activité */}
@@ -54,14 +49,6 @@ const styles = StyleSheet.create({
   },
   activeButton: {
     backgroundColor: '#E4E0D4', // Version légèrement plus foncée pour l'état actif
-  },
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    height: 32,
-    width: 32, // Taille de l'icône
   },
   activeIndicator: {
     position: 'absolute',
