@@ -48,3 +48,26 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+# Script pour installer expo-location 
+
+npx expo install react-native-maps expo-location
+
+# Script pour installer expo-router
+
+npx expo install expo-router
+
+# Obtenir des clés API Google Maps
+   - Allez sur Google Cloud Console
+   - Créez un nouveau projet ou sélectionnez un projet existant
+   - Dans le menu de navigation, cliquez sur "APIs & Services" > "Library"
+   - Recherchez et activez les APIs suivantes :
+   - Maps SDK for iOS
+   - Maps SDK for Android
+   - 5. Allez dans "APIs & Services" > "Credentials"
+   - 6. Cliquez sur "Create credentials" > "API key"
+   - Vous obtiendrez une clé API. Pour plus de sécurité, vous devriez restreindre cette clé :
+   - Cliquez sur "Restrict key"
+   - Sous "Application restrictions", sélectionnez "Android apps" ou "iOS apps" selon la plateforme
+   - Ajoutez les restrictions appropriées (package name, SHA-1, etc.)
+

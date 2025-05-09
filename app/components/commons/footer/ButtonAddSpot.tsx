@@ -1,41 +1,57 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
+import style from '@/styles/global';
 
-// Définition de la constante IconSource
-const IconSource = require('../../../../assets/images/icon-add-spot-navbar.png');
+interface Props {
+  onPress?: () => void; 
+  isActive?: boolean;
+}
 
-type Props = {
-  onPress?: () => void; // Fonction déclenchée lors du clic
-};
-
-function ButtonAddSpot({ onPress }: Props) {
- 
+function ButtonAddSpot({ onPress, isActive = false }: Props) {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <View style={styles.iconContainer}>
-        <Image source={IconSource} style={styles.icon} />
-      </View>
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <TouchableOpacity 
+        style={[
+          styles.button,
+          isActive && styles.activeButton
+        ]} 
+        onPress={onPress}
+      >
+        <Ionicons name="add" size={32} color="#006A71" />
+
+      </TouchableOpacity>
+      
+
+
+      {isActive && <View style={styles.activeIndicator} />}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    position: 'relative',
+  },
   button: {
-    backgroundColor: '#F2EFE7', // Couleur de fond du bouton
+    backgroundColor: '#F2EFE7',
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 5, // Espacement vertical entre les boutons
+    marginVertical: 5,
   },
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  activeButton: {
+    backgroundColor: '#E4E0D4',
   },
-  icon: {
-    height: 32,
-    width: 32, // Taille de l'icône
+  activeIndicator: {
+    position: 'absolute',
+    bottom: -6,
+    height: 3,
+    width: 20,
+    backgroundColor: style.color.primary || '#00A896', 
+    borderRadius: 1.5,
   },
 });
 
