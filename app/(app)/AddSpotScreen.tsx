@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Image,
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { router } from "expo-router";
@@ -17,42 +18,106 @@ import ButtonDelete from "../components/commons/buttons/ButtonDelete";
 import ButtonLoadImage from "../components/commons/buttons/ButtonLoadImage";
 import ButtonAddSpot from "../components/addSpotScreen/ButtonAddSpot";
 import * as ImagePicker from "expo-image-picker";
+import { Picker } from "@react-native-picker/picker";
+import globalStyle from "@/styles/global";
 
-type Props = {};
+// Définition des types avec une syntaxe plus claire
+type Country =
+  | "France"
+  | "Spain"
+  | "Portugal"
+  | "Italy"
+  | "Morocco"
+  | "United States"
+  | "Australia"
+  | "Indonesia"
+  | "South Africa"
+  | "Brazil";
 
-function AddSpotScreen({}: Props) {
+const destinations: Record<string, string[]> = {
+  France: ["Biarritz", "Hossegor", "La Torche"],
+  Spain: ["Mundaka", "Zarautz", "San Sebastián"],
+  Portugal: ["Ericeira", "Peniche", "Nazaré"],
+  Italy: ["Sardinia", "Rome", "Sicily"],
+  Morocco: ["Taghazout", "Essaouira", "Agadir"],
+  "United States": ["Santa Cruz", "Malibu", "Honolulu"],
+  Australia: ["Bondi Beach", "Byron Bay", "Snapper Rocks"],
+  Indonesia: ["Bali", "G-Land", "Lombok"],
+  "South Africa": ["Jeffreys Bay", "Durban", "Cape Town"],
+  Brazil: ["Florianópolis", "Fernando de Noronha", "Rio de Janeiro"],
+};
+
+function AddSpotScreen() {
   const { user } = useAuth();
   const [spotName, setSpotName] = useState("");
   const [difficulty, setDifficulty] = useState("Intermediate");
   const [destination, setDestination] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
 
-  // Liste des niveaux de difficulté
   const difficultyLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
+  // Redirection si l'utilisateur n'est pas connecté
   useEffect(() => {
     if (!user) {
-      router.replace("/sign-in"); // redirection propre
+      router.replace("/sign-in");
     }
   }, [user]);
 
   if (!user) {
-    return null; // évite de rendre quoi que ce soit pendant la redirection
+    return null;
   }
 
-  // Fonction pour gérer le chargement d'image
-  const handleLoadImage = () => {
-    // Ici vous pourrez implémenter la logique pour charger une image
-    // Par exemple en utilisant expo-image-picker
-    Alert.alert(
-      "Load Image",
-      "Image picker functionality will be implemented here"
-    );
+  const [selectedCountry, setSelectedCountry] = useState<string>("France");
+  const [selectedCity, setSelectedCity] = useState<string>(
+    destinations["France"][0]
+  );
+
+  // Mise à jour de la ville sélectionnée quand le pays change
+  useEffect(() => {
+    // Vérification que le pays sélectionné existe dans destinations
+    if (destinations[selectedCountry]) {
+      setSelectedCity(destinations[selectedCountry][0]);
+    }
+  }, [selectedCountry]);
+
+  // Mise à jour de la destination complète
+  useEffect(() => {
+    setDestination(`${selectedCity}, ${selectedCountry}`);
+  }, [selectedCity, selectedCountry]);
+
+  // Implementation of image loading with ImagePicker
+  const handleLoadImage = async () => {
+    try {
+      // Request permission
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permissionResult.granted) {
+        Alert.alert(
+          "Permission denied",
+          "You need to allow access to your gallery to add an image."
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImageUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Error loading image:", error);
+      Alert.alert("Error", "Unable to load image.");
+    }
   };
 
-  // Fonction pour gérer l'ajout d'un spot
   const handleAddSpot = () => {
-    // Validation des données
     if (!spotName.trim()) {
       Alert.alert("Error", "Please enter a spot name");
       return;
@@ -63,11 +128,13 @@ function AddSpotScreen({}: Props) {
       return;
     }
 
-    // Simuler l'ajout d'un spot
+    // Here you could add code to save the spot to your database
+    // For example, an API call or local storage
+
     Alert.alert("Success", `Spot "${spotName}" added successfully!`, [
       {
         text: "OK",
-        onPress: () => router.back(), // Retourner à l'écran précédent après l'ajout
+        onPress: () => router.back(),
       },
     ]);
   };
@@ -80,7 +147,6 @@ function AddSpotScreen({}: Props) {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Add New Surf Spot</Text>
 
-        {/* Section pour charger l'image */}
         <View style={styles.imageSection}>
           {imageUri ? (
             <FormAddImageSpot imageUri={imageUri} />
@@ -96,7 +162,6 @@ function AddSpotScreen({}: Props) {
           />
         </View>
 
-        {/* Mode d'édition pour le formulaire */}
         <View style={styles.formSection}>
           <Text style={styles.sectionTitle}>Enter Spot Details:</Text>
 
@@ -124,16 +189,33 @@ function AddSpotScreen({}: Props) {
             ))}
           </View>
 
-          <Text style={styles.label}>Destination:</Text>
-          <TextInput
-            style={styles.input}
-            value={destination}
-            onChangeText={setDestination}
-            placeholder="Enter destination"
-          />
+          <Text style={styles.label}>Country:</Text>
+          <View style={styles.input}>
+            <Picker
+              selectedValue={selectedCountry}
+              onValueChange={(itemValue) => setSelectedCountry(itemValue)}
+              style={{ color: "#444" }}
+            >
+              {Object.keys(destinations).map((country) => (
+                <Picker.Item label={country} value={country} key={country} />
+              ))}
+            </Picker>
+          </View>
+
+          <Text style={styles.label}>City:</Text>
+          <View style={styles.input}>
+            <Picker
+              selectedValue={selectedCity}
+              onValueChange={(itemValue) => setSelectedCity(itemValue)}
+              style={{ color: "#444" }}
+            >
+              {destinations[selectedCountry]?.map((city) => (
+                <Picker.Item label={city} value={city} key={city} />
+              )) || <Picker.Item label="Select a country first" value="" />}
+            </Picker>
+          </View>
         </View>
 
-        {/* Prévisualisation avec FormAddContentSpot */}
         <View style={styles.previewSection}>
           <Text style={styles.sectionTitle}>Preview:</Text>
           <FormAddContentSpot
@@ -143,7 +225,6 @@ function AddSpotScreen({}: Props) {
           />
         </View>
 
-        {/* Boutons d'action */}
         <View style={styles.actionButtons}>
           <ButtonDelete onPress={() => router.back()} />
           <ButtonAddSpot onPress={handleAddSpot} />
