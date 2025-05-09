@@ -19,7 +19,7 @@ function ButtonHome({ onPress, isActive = false }: Props) {
         ]} 
         onPress={onPress}
       >
-        <Ionicons name="home" size={32} color="#00A896" />
+        <Ionicons name="home" size={32} color="#006A71" />
 
       </TouchableOpacity>
       
