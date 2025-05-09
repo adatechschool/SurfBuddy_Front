@@ -19,7 +19,7 @@ function AddSpotScreen({}: Props) {
   }
 
   return (
-    <View>
+    <View >
       <Text>AddSpotScreen</Text>
     </View>
   );
