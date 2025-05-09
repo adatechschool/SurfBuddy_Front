@@ -1,12 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ProfileImage from '../components/profileScreen/ProfileImage'; 
 import ProfileContent from '../components/profileScreen/ProfileContent'; 
 import ButtonUpdate from '../components/commons/buttons/ButtonUpdate'; 
 import ButtonDelete from '../components/commons/buttons/ButtonDelete';
-import globalStyle from '../../styles/global'; // Assure-toi que l'import est correct
+import globalStyle from '../../styles/global'; 
+import { useAuth } from '../context/AuthContext';
+import { router } from 'expo-router';
 
 const ProfileScreen = () => {
+  const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      router.replace('/sign-in'); // route absolue recommandée
+    }
+  }, [user]);
+
+  const handleSignOut = () => {
+    signOut();
+    router.replace('/');
+  };
+
+  if (!user) return null;
+
   return (
     <View style={styles.screen}>
       <Text style={[styles.title, { color: globalStyle.color.secondary }]}>
@@ -15,7 +32,6 @@ const ProfileScreen = () => {
       <ProfileImage />
       <ProfileContent />
 
-      {/* Conteneur des boutons */}
       <View style={styles.buttonContainer}>
         <ButtonUpdate onPress={() => console.log('Update')} />
         <ButtonDelete onPress={() => console.log('Delete')} />
@@ -36,7 +52,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonContainer: {
-    flexDirection: 'row', // Boutons côte à côte
+    flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
     marginTop: 5,

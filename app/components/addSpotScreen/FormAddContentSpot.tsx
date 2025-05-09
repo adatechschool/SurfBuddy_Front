@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 
 type SpotContentProps = {
   spotName: string;
@@ -7,22 +7,26 @@ type SpotContentProps = {
   destination: string;
 };
 
-const FormAddContentSpot = ({ spotName, difficultyLevel, destination }: SpotContentProps) => {
+const FormAddContentSpot = ({
+  spotName,
+  difficultyLevel,
+  destination,
+}: SpotContentProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Nom du spot :</Text>
+      <Text style={styles.label}>Spot Name :</Text>
       <View style={styles.block}>
-        <Text style={styles.value}>{spotName || 'Non défini'}</Text>
+        <Text style={styles.value}>{spotName || "Not defined"}</Text>
       </View>
-      
+
       <Text style={styles.label}>Difficulty Level :</Text>
       <View style={styles.block}>
-        <Text style={styles.value}>{difficultyLevel || 'Non défini'}</Text>
+        <Text style={styles.value}>{difficultyLevel || "Not defined"}</Text>
       </View>
-      
+
       <Text style={styles.label}>Destination :</Text>
       <View style={styles.block}>
-        <Text style={styles.value}>{destination || 'Non défini'}</Text>
+        <Text style={styles.value}>{destination || "Not defined"}</Text>
       </View>
     </View>
   );
@@ -31,20 +35,20 @@ const FormAddContentSpot = ({ spotName, difficultyLevel, destination }: SpotCont
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    width: '100%',
+    width: "100%",
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
-    color: '#333',
+    color: "#333",
   },
   block: {
-    backgroundColor: '#F2EFE7',
+    backgroundColor: "#F2EFE7",
     padding: 14,
     borderRadius: 8,
     marginBottom: 15,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -52,7 +56,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 15,
-    color: '#444',
+    color: "#444",
   },
 });
 
