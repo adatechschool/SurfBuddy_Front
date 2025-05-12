@@ -273,7 +273,7 @@ function AddSpotScreen() {
             <Picker
               selectedValue={selectedCountry}
               onValueChange={handleCountryChange}
-              style={{ color: "#444" }}
+              style={{ color: "#006A71" }}
             >
               {Object.keys([...Object.keys(destinations), "Autre..."].reduce((obj, key) => ({ ...obj, [key]: [] }), {})).map((country) => (
                 <Picker.Item label={country} value={country} key={country} />
@@ -290,7 +290,7 @@ function AddSpotScreen() {
             <Picker
               selectedValue={selectedCity}
               onValueChange={handleCityChange}
-              style={{ color: "#444" }}
+              style={{ color: "#006A71" }}
             >
               {(selectedCountry !== "Autre..." 
                 ? destinations[selectedCountry] 
