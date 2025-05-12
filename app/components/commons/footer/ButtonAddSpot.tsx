@@ -18,7 +18,7 @@ function ButtonAddSpot({ onPress, isActive = false }: Props) {
         ]} 
         onPress={onPress}
       >
-        <Ionicons name="add" size={32} color="#00A896" />
+        <Ionicons name="add" size={32} color="#006A71" />
 
       </TouchableOpacity>
       

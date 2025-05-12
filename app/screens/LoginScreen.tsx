@@ -4,7 +4,7 @@ import FormContentProfile from '../components/loginScreen/FormContentProfile';
 import ButtonLogin from '../components/loginScreen/ButtonLogin';
 import FormImageProfile from '../components/loginScreen/FormImageProfile';
 import * as ImagePicker from 'expo-image-picker';
-import ButtonLoadImage from '../components/loginScreen/ButtonLoadImage';
+import ButtonLoadImage from '../components/commons/buttons/ButtonLoadImage';
 
 const PlaceholderImage = require('@/assets/images/logo-icon.png');
 

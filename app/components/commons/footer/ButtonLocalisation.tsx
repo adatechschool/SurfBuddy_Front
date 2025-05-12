@@ -21,7 +21,7 @@ function ButtonLocalisation({ onPress, isActive = false }: Props) {
       >
         <Ionicons 
           name="map" 
-          size={32} color="#00A896"  
+          size={32} color="#006A71"  
         />
       </TouchableOpacity>
       

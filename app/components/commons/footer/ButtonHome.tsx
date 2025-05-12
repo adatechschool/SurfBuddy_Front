@@ -3,9 +3,6 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import style from '@/styles/global';
 
-// Définition de la constante IconSource
-const IconSource = require('../../../../assets/images/icon-home-screen.png');
-
 // Mettre à jour l'interface Props pour inclure isActive
 interface Props {
   onPress?: () => void; // Fonction déclenchée lors du clic
@@ -22,7 +19,7 @@ function ButtonHome({ onPress, isActive = false }: Props) {
         ]} 
         onPress={onPress}
       >
-        <Ionicons name="home" size={32} color="#00A896" />
+        <Ionicons name="home" size={32} color="#006A71" />
 
       </TouchableOpacity>
       
