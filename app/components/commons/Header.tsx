@@ -2,6 +2,7 @@ import { View, StyleSheet, Platform, StatusBar, SafeAreaView } from 'react-nativ
 import { Image } from 'expo-image';
 import style from '@/styles/global';
 import Constants from 'expo-constants';
+import ButtonLogout from './ButtonLogout';
 
 const LogoImage = require('../../../assets/images/logo-icon.png');
 
@@ -17,7 +18,7 @@ export default function Header() {
       />
       <View 
         style={[
-          styles.container, 
+          styles.container,
           { backgroundColor: style.color.primary }
         ]}
       >
@@ -31,6 +32,11 @@ export default function Header() {
             style={styles.logo}
             contentFit="contain"
           />
+          
+          {/* Position absolue pour le bouton de déconnexion à droite */}
+          <View style={styles.buttonLogoutContainer}>
+            <ButtonLogout color={style.color.secondary} />
+          </View>
         </View>
       </View>
     </>
@@ -47,10 +53,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative', // Ajout pour permettre un positionnement absolu correct des enfants
     borderBottomWidth: 1,
   },
   logo: {
     width: 100,
-    height: 80, // J'ai réduit la hauteur à 80 pour correspondre au header
+    height: 80,
   },
+  buttonLogoutContainer: {
+    position: 'absolute',
+    right: 16,
+    top: '30%', // Centre verticalement
+    transform: [{ translateY: -12 }], // Ajustement pour compenser la moitié de la hauteur du bouton
+  }
 });
