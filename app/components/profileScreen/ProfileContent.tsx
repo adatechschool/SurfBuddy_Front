@@ -5,17 +5,17 @@ import profile from '../../../profile.json'; // Assure-toi du bon chemin d'impor
 const ProfileContent = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Pseudo :</Text>
+      <Text style={styles.label}>Alias:</Text>
       <View style={styles.block}>
         <Text style={styles.value}>{profile.username}</Text>
       </View>
 
-      <Text style={styles.label}>Email :</Text>
+      <Text style={styles.label}>Email:</Text>
       <View style={styles.block}>
         <Text style={styles.value}>{profile.email}</Text>
       </View>
 
-      <Text style={styles.label}>Mot de passe :</Text>
+      <Text style={styles.label}>Password:</Text>
 <View style={styles.block}>
   <Text style={styles.value}>********</Text> {/* Remplace le texte par des étoiles */}
 </View>

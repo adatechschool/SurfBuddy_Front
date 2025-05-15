@@ -96,9 +96,9 @@ const getSpots = async (search: string): Promise<AirtableRecord[]> => {
     console.log(`Nombre de résultats trouvés: ${filteredRecords.length}`);
     return filteredRecords;
   } catch (error) {
-    console.error("Erreur lors de la recherche:", error);
+    console.error("Error lors de la recherche:", error);
     if (axios.isAxiosError(error)) {
-      console.error("Détails de l'erreur Axios:", error.response?.data || error.message);
+      console.error("Détails de l'error Axios:", error.response?.data || error.message);
     }
     
     // En cas d'erreur, récupérons tous les enregistrements et filtrons-les manuellement
