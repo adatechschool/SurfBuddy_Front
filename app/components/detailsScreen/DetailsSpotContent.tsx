@@ -13,18 +13,14 @@ export default function DetailsSpotContent({ spot }: DetailsSpotContentProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{fields["Surf Break"]?.[0] || "Spot sans nom"}</Text>
-      <Text style={styles.location}>{fields.Country || "Pays non spécifié"}</Text>
+      <Text style={styles.location}>{fields.Country || "No info on the Country"}</Text>
       
       <View style={styles.infoContainer}>
-        <InfoItem label="Difficulté" value={fields.DifficultyLevel || "Non spécifiée"} />
-        <InfoItem label="Type de vague" value={fields.WaveType || "Non spécifié"} />
-        <InfoItem label="Meilleure saison" value={fields.BestSeason || "Non spécifiée"} />
+        <InfoItem label="Difficulty" value={fields.DifficultyLevel || "Unspecified"} />
+        <InfoItem label="Wave type" value={fields.WaveType || "Unspecified"} />
+        <InfoItem label="Best season" value={fields.BestSeason || "Unspecified"} />
       </View>
       
-      <View style={styles.descriptionContainer}>
-        <Text style={styles.descriptionTitle}>Description</Text>
-        <Text style={styles.description}>{fields.Description || "Aucune description disponible pour ce spot."}</Text>
-      </View>
     </View>
   );
 }

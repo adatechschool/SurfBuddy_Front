@@ -33,17 +33,17 @@ interface Coordinates {
 
 // Liste prédéfinie de pays et villes
 const destinations: Record<string, string[]> = {
-  France: ["Biarritz", "Hossegor", "La Torche", "Autre..."],
-  Spain: ["Mundaka", "Zarautz", "San Sebastián", "Autre..."],
-  Portugal: ["Ericeira", "Peniche", "Nazaré", "Autre..."],
-  Italy: ["Sardinia", "Rome", "Sicily", "Autre..."],
-  Morocco: ["Taghazout", "Essaouira", "Agadir", "Autre..."],
-  "United States": ["Santa Cruz", "Malibu", "Honolulu", "Autre..."],
-  Australia: ["Bondi Beach", "Byron Bay", "Snapper Rocks", "Autre..."],
-  Indonesia: ["Bali", "G-Land", "Lombok", "Autre..."],
-  "South Africa": ["Jeffreys Bay", "Durban", "Cape Town", "Autre..."],
-  Brazil: ["Florianópolis", "Fernando de Noronha", "Rio de Janeiro", "Autre..."],
-  "Autre...": ["Ajouter une ville..."],
+  France: ["Biarritz", "Hossegor", "La Torche", "Other..."],
+  Spain: ["Mundaka", "Zarautz", "San Sebastián", "Other..."],
+  Portugal: ["Ericeira", "Peniche", "Nazaré", "Other..."],
+  Italy: ["Sardinia", "Rome", "Sicily", "Other..."],
+  Morocco: ["Taghazout", "Essaouira", "Agadir", "Other..."],
+  "United States": ["Santa Cruz", "Malibu", "Honolulu", "Other..."],
+  Australia: ["Bondi Beach", "Byron Bay", "Snapper Rocks", "Other..."],
+  Indonesia: ["Bali", "G-Land", "Lombok", "Other..."],
+  "South Africa": ["Jeffreys Bay", "Durban", "Cape Town", "Other..."],
+  Brazil: ["Florianópolis", "Fernando de Noronha", "Rio de Janeiro", "Other..."],
+  "Other...": ["Add another city..."],
 };
 
 function AddSpotScreen() {
@@ -86,13 +86,13 @@ function AddSpotScreen() {
 
   // Mise à jour de la destination complète
   useEffect(() => {
-    if (selectedCountry === "Autre..." && customCountry) {
+    if (selectedCountry === "Other..." && customCountry) {
       if (customCity) {
         setDestination(`${customCity}, ${customCountry}`);
       } else {
         setDestination(customCountry);
       }
-    } else if (selectedCity === "Autre..." || selectedCity === "Ajouter une ville...") {
+    } else if (selectedCity === "Other..." || selectedCity === "Other City...") {
       if (customCity) {
         setDestination(`${customCity}, ${selectedCountry}`);
       } else {
@@ -110,8 +110,8 @@ function AddSpotScreen() {
       
       if (!permissionResult.granted) {
         Alert.alert(
-          "Permission refusée",
-          "Vous devez autoriser l'accès à votre galerie pour ajouter une image."
+          "Permission denied",
+          "You need to autorize access to your gallery to add an image."
         );
         return;
       }
@@ -135,7 +135,7 @@ function AddSpotScreen() {
   // Gestion des sélections de pays/ville
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
-    if (value === "Autre...") {
+    if (value === "Other...") {
       setModalMode("country");
       setShowCustomLocationModal(true);
     }
@@ -143,7 +143,7 @@ function AddSpotScreen() {
 
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
-    if (value === "Autre..." || value === "Ajouter une ville...") {
+    if (value === "Other..." || value === "Add a country...") {
       setModalMode("city");
       setShowCustomLocationModal(true);
     }
@@ -152,12 +152,12 @@ function AddSpotScreen() {
   // Validation et enregistrement du spot
   const handleAddSpot = () => {
     if (!spotName.trim()) {
-      Alert.alert("Erreur", "Veuillez entrer un nom de spot");
+      Alert.alert("Error", "Please enter a spot name");
       return;
     }
 
     if (!destination.trim()) {
-      Alert.alert("Erreur", "Veuillez entrer une destination");
+      Alert.alert("Erreur", "Please enter a destination");
       return;
     }
 
@@ -175,7 +175,7 @@ function AddSpotScreen() {
     console.log("Données du spot à envoyer:", spotData);
 
     // Simulation de succès (à remplacer par votre appel API réel)
-    Alert.alert("Succès", `Spot "${spotName}" ajouté avec succès!`, [
+    Alert.alert("Success", `Spot "${spotName}" add with success!`, [
       {
         text: "OK",
         onPress: () => router.back(),
@@ -222,7 +222,7 @@ function AddSpotScreen() {
       style={styles.container}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>Ajouter un Nouveau Spot de Surf</Text>
+        <Text style={styles.title}>Add a Surf spot</Text>
 
         {/* Section Image */}
         <View style={styles.imageSection}>
@@ -230,11 +230,11 @@ function AddSpotScreen() {
             <FormAddImageSpot imageUri={imageUri} />
           ) : (
             <View style={styles.placeholderImage}>
-              <Text style={styles.placeholderText}>Pas d'image sélectionnée</Text>
+              <Text style={styles.placeholderText}>No image selected</Text>
             </View>
           )}
           <ButtonLoadImage
-            label="Charger une image"
+            label="Choose an image"
             theme="primary"
             onPress={handleLoadImage}
           />
@@ -242,17 +242,17 @@ function AddSpotScreen() {
 
         {/* Formulaire principal */}
         <View style={styles.formSection}>
-          <Text style={styles.sectionTitle}>Détails du Spot:</Text>
+          <Text style={styles.sectionTitle}>Spot info:</Text>
 
-          <Text style={styles.label}>Nom du Spot:</Text>
+          <Text style={styles.label}>Spot name:</Text>
           <TextInput
             style={styles.input}
             value={spotName}
             onChangeText={setSpotName}
-            placeholder="Entrer le nom du spot"
+            placeholder=" Enter the spot name"
           />
 
-          <Text style={styles.label}>Niveau de Difficulté:</Text>
+          <Text style={styles.label}>Difficulty:</Text>
           <View style={styles.pickerContainer}>
             {difficultyLevels.map((level) => (
               <Text
@@ -268,44 +268,44 @@ function AddSpotScreen() {
             ))}
           </View>
 
-          <Text style={styles.label}>Pays:</Text>
+          <Text style={styles.label}>Country:</Text>
           <View style={styles.input}>
             <Picker
               selectedValue={selectedCountry}
               onValueChange={handleCountryChange}
               style={{ color: "#006A71" }}
             >
-              {Object.keys([...Object.keys(destinations), "Autre..."].reduce((obj, key) => ({ ...obj, [key]: [] }), {})).map((country) => (
+              {Object.keys([...Object.keys(destinations), "Other..."].reduce((obj, key) => ({ ...obj, [key]: [] }), {})).map((country) => (
                 <Picker.Item label={country} value={country} key={country} />
               ))}
             </Picker>
           </View>
 
-          {selectedCountry === "Autre..." && customCountry ? (
-            <Text style={styles.customLocationText}>Pays sélectionné: {customCountry}</Text>
+          {selectedCountry === "Other..." && customCountry ? (
+            <Text style={styles.customLocationText}>Country: {customCountry}</Text>
           ) : null}
 
-          <Text style={styles.label}>Ville:</Text>
+          <Text style={styles.label}>City:</Text>
           <View style={styles.input}>
             <Picker
               selectedValue={selectedCity}
               onValueChange={handleCityChange}
               style={{ color: "#006A71" }}
             >
-              {(selectedCountry !== "Autre..." 
+              {(selectedCountry !== "Other..." 
                 ? destinations[selectedCountry] 
-                : ["Ajouter une ville..."]).map((city) => (
+                : ["Add a city..."]).map((city) => (
                 <Picker.Item label={city} value={city} key={city} />
               ))}
             </Picker>
           </View>
 
-          {(selectedCity === "Autre..." || selectedCity === "Ajouter une ville...") && customCity ? (
-            <Text style={styles.customLocationText}>Ville sélectionnée: {customCity}</Text>
+          {(selectedCity === "Other..." || selectedCity === "Add a city...") && customCity ? (
+            <Text style={styles.customLocationText}>City added: {customCity}</Text>
           ) : null}
 
           {/* Section Coordonnées */}
-          <Text style={styles.label}>Coordonnées Géographiques:</Text>
+          <Text style={styles.label}>Coordinates:</Text>
           <View style={styles.coordinatesContainer}>
             <Text style={styles.coordinates}>
               Lat: {coordinates.latitude.toFixed(6)}, Long: {coordinates.longitude.toFixed(6)}
@@ -314,20 +314,20 @@ function AddSpotScreen() {
               style={styles.mapButton}
               onPress={() => setShowMapModal(true)}
             >
-              <Text style={styles.mapButtonText}>Sélectionner sur la carte</Text>
+              <Text style={styles.mapButtonText}>Select on the map</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.mapButton, { backgroundColor: '#4B80AF' }]}
               onPress={getCurrentLocation}
             >
-              <Text style={styles.mapButtonText}>Utiliser ma position</Text>
+              <Text style={styles.mapButtonText}>Use my position</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Aperçu */}
         <View style={styles.previewSection}>
-          <Text style={styles.sectionTitle}>Aperçu:</Text>
+          <Text style={styles.sectionTitle}>Preview:</Text>
           <FormAddContentSpot
             spotName={spotName}
             difficultyLevel={difficulty}
@@ -351,12 +351,12 @@ function AddSpotScreen() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
-              {modalMode === "country" ? "Ajouter un Pays" : "Ajouter une Ville"}
+              {modalMode === "country" ? "Add a country": "Add a City"}
             </Text>
             
             <TextInput
               style={styles.modalInput}
-              placeholder={modalMode === "country" ? "Nom du pays" : "Nom de la ville"}
+              placeholder={modalMode === "country" ? "Country": "City"}
               value={modalMode === "country" ? customCountry : customCity}
               onChangeText={modalMode === "country" ? setCustomCountry : setCustomCity}
               autoFocus
@@ -374,7 +374,7 @@ function AddSpotScreen() {
                   }
                 }}
               >
-                <Text style={styles.modalButtonText}>Annuler</Text>
+                <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
               
               <TouchableOpacity
@@ -384,15 +384,15 @@ function AddSpotScreen() {
                   if (modalMode === "country" && customCountry.trim()) {
                     // Ajouter le pays personnalisé s'il n'existe pas déjà
                     if (!destinations[customCountry]) {
-                      destinations[customCountry] = ["Ajouter une ville..."];
+                      destinations[customCountry] = ["Add a city..."];
                     }
                     setSelectedCountry(customCountry);
                   } else if (modalMode === "city" && customCity.trim()) {
-                    setSelectedCity("Autre..."); // Pour que l'interface affiche que c'est une ville personnalisée
+                    setSelectedCity("Other..."); // Pour que l'interface affiche que c'est une ville personnalisée
                   }
                 }}
               >
-                <Text style={styles.modalButtonText}>Confirmer</Text>
+                <Text style={styles.modalButtonText}>Confirm</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -435,7 +435,7 @@ function AddSpotScreen() {
               style={[styles.mapModalButton, { backgroundColor: "#006A71" }]}
               onPress={() => setShowMapModal(false)}
             >
-              <Text style={styles.mapModalButtonText}>Confirmer</Text>
+              <Text style={styles.mapModalButtonText}>Confirm</Text>
             </TouchableOpacity>
           </View>
         </View>

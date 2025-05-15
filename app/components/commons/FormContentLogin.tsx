@@ -29,7 +29,7 @@ const FormContentLogin = ({ onSubmit }: FormContentLoginProps) => {
 
   const validatePassword = () => {
     if (!password) {
-      setPasswordError('Veuillez entrer votre mot de passe');
+      setPasswordError('Please enter your password');
       return false;
     }
     setPasswordError('');
