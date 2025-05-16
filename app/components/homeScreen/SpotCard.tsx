@@ -3,7 +3,6 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import {Spot} from '../../types/Spot';
 import style from '@/styles/global';
-import SpotCardImage from './SpotCardImage';
 import SpotCardDetails from './SpotCardDetails';
 
 interface SpotCardProps {
@@ -23,7 +22,6 @@ const SpotCard = ({ spot }: SpotCardProps) => {
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
       <View style={styles.card}>
-        <SpotCardImage item={spot} />
         <SpotCardDetails item={spot} />
       </View>
     </TouchableOpacity>

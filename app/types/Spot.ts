@@ -1,5 +1,5 @@
 export interface Spot {
-  id: bigint;
+  id: string;
   spot_name: string;
   city?: string;
   country?: string;
