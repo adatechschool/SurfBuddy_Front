@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import type { AirtableRecord } from '@/airtableService';
+import {Spot} from '../../types/Spot';
 import style from '@/styles/global';
 import SpotCardImage from './SpotCardImage';
 import SpotCardDetails from './SpotCardDetails';
 
 interface SpotCardProps {
-  spot: AirtableRecord;
+  spot: Spot;
 }
 
 const SpotCard = ({ spot }: SpotCardProps) => {

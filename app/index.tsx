@@ -11,14 +11,15 @@ import SpotCard from "./components/homeScreen/SpotCard";
 import SearchBar from "./components/homeScreen/SearchBar";
 import style from "@/styles/global";
 import { useRouter, usePathname,Link } from "expo-router";
+import { Spot } from './types/Spot';
 
-// URL de l'API backend
-const API_URL = "http://localhost:8000";
+// Adresse IP de l'API local (PC de Molid)
+const API_URL = "http://192.168.13.5:8000";   // Remplacez X par votre adresse IP locale
 
 export default function HomeScreen() {
   const [search, setSearch] = useState("");
-  const [spots, setSpots] = useState([]);
-  const [filteredSpots, setFilteredSpots] = useState([]);
+  const [spots, setSpots] = useState<Spot[]>([]);
+  const [filteredSpots, setFilteredSpots] = useState<Spot[]>([]);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
 
@@ -26,10 +27,10 @@ export default function HomeScreen() {
     // Charger les données de l'API locale au montage du composant
     fetch(`${API_URL}/spots`)
       .then((response) => response.json())
-      .then((data) => {
+      .then((data: any[]) => {
         // Transformer les données pour gérer les images base64
-        const processedData = data.map(spot => ({
-          ...spots,
+        const processedData = data.map((spot: any) => ({
+          ...spot,
           // Créer une URL utilisable pour l'image si elle existe
           spotPictureUrl: spot.spot_picture 
             ? `data:image/jpeg;base64,${spot.spot_picture}` 
@@ -39,7 +40,7 @@ export default function HomeScreen() {
         setSpots(processedData);
         setFilteredSpots(processedData);
         setLoading(false);
-        console.log("Données chargées:", processedData);
+        console.log("Nombre de spots chargés:", processedData.length);
       })
       .catch((error) => {
         console.error("Erreur lors du chargement du JSON:", error);
