@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import {Spot} from '../../types/Spot';
 import style from '@/styles/global';
 import SpotCardDetails from './SpotCardDetails';
+import SpotCardImage from './SpotCardImage';
 
 interface SpotCardProps {
   spot: Spot;
@@ -22,6 +23,7 @@ const SpotCard = ({ spot }: SpotCardProps) => {
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
       <View style={styles.card}>
+        <SpotCardImage item={spot} />
         <SpotCardDetails item={spot} />
       </View>
     </TouchableOpacity>

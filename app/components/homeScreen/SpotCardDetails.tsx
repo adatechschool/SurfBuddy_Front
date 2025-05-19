@@ -4,10 +4,15 @@ import {Spot} from '../../types/Spot';
 
 export default function SpotCardDetails({ item }: { item: Spot }) {
   const surfBreak = item.spot_name ?? 'Inconnu';
-
+  const city = item.city ?? 'Inconnu';
+  const country = item.country ?? 'Inconnu';
+  const difficulty = item.difficulty ?? 'Inconnu';
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{surfBreak}</Text>
+      <Text style={styles.city}>{city}, {country}</Text>
+      <Text style={styles.city}>{difficulty}</Text>
     </View>
   );
 }
@@ -25,7 +30,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 5,
   },
-  address: {
+  city: {
     fontSize: 14,
     color: '#666',
     textAlign: 'center',
