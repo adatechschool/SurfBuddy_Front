@@ -1,24 +1,23 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import { Image } from 'expo-image';
-import type { AirtableRecord } from '@/airtableService';
+import { Spot } from '../../types/Spot';
 import style from '@/styles/global';
 
 const { width } = Dimensions.get('window');
 
 interface DetailsSpotImageProps {
-  spot: AirtableRecord;
+  spot: Spot;
 }
 
 export default function DetailsSpotImage({ spot }: DetailsSpotImageProps) {
-  const photos = spot.fields.Photos || [];
-  const imageUrl = photos.length > 0 ? photos[0].url : null;
+  const photos = spot.spot_picture || [];
 
   return (
     <View style={styles.container}>
-      {imageUrl ? (
+      {photos ? (
         <Image
-          source={{ uri: imageUrl }}
+          source={spot.spot_picture}
           style={styles.image}
           contentFit="cover"
         />

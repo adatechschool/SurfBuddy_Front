@@ -1,24 +1,24 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import type { AirtableRecord } from '@/airtableService';
 import style from '@/styles/global';
+import { Spot } from '@/app/types/Spot';
 
 interface DetailsSpotContentProps {
-  spot: AirtableRecord;
+  spot: Spot;
 }
 
 export default function DetailsSpotContent({ spot }: DetailsSpotContentProps) {
-  const { fields } = spot;
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{fields["Surf Break"]?.[0] || "Spot sans nom"}</Text>
-      <Text style={styles.location}>{fields.Country || "No info on the Country"}</Text>
+      <Text style={styles.title}>{spot.spot_name|| "Spot without type"}</Text>
+      <Text style={styles.location}>{spot.city || "No info on the City"}</Text>
+      <Text style={styles.location}>{spot.country || "No info on the Country"}</Text>
       
       <View style={styles.infoContainer}>
-        <InfoItem label="Difficulty" value={fields.DifficultyLevel || "Unspecified"} />
-        <InfoItem label="Wave type" value={fields.WaveType || "Unspecified"} />
-        <InfoItem label="Best season" value={fields.BestSeason || "Unspecified"} />
+        <InfoItem label="Difficulty" value={spot.difficulty || "Unspecified"} />
+        <InfoItem label="Season Begin" value={spot.season_begin || "Unspecified"} />
+        <InfoItem label="Season End" value={spot.season_end || "Unspecified"} />
       </View>
       
     </View>

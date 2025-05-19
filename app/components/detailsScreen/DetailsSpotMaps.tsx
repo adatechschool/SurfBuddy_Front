@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Dimensions, ActivityIndicator, Text } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import type { AirtableRecord } from '@/airtableService';
+import { Spot } from '../../types/Spot';
 
 const { width, height } = Dimensions.get('window');
 
 interface DetailsSpotMapsProps {
-  spot: AirtableRecord;
+  spot: Spot;
 }
 
 export default function DetailsSpotMaps({ spot }: DetailsSpotMapsProps) {
@@ -21,39 +21,51 @@ export default function DetailsSpotMaps({ spot }: DetailsSpotMapsProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function getLocationFromAddress() {
+    async function setupLocation() {
       try {
         setLoading(true);
-        
-        // Vérifier si l'adresse est disponible
-        const address = spot.fields.Address;
-        if (!address) {
-          setError("Adresse non disponible pour ce spot");
-          setLoading(false);
-          return;
-        }
 
-        // Demander la permission de géolocalisation
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setError("Permission de localisation refusée");
-          setLoading(false);
-          return;
-        }
-
-        // Géocoder l'adresse pour obtenir les coordonnées
-        const geocode = await Location.geocodeAsync(address);
-        
-        if (geocode.length > 0) {
-          const { latitude, longitude } = geocode[0];
+        // Option 1: Si vous avez déjà les coordonnées dans votre BDD
+        if (spot.latitude && spot.longitude) {
           setLocation({
-            latitude,
-            longitude,
+            latitude: parseFloat(spot.latitude.toString()),
+            longitude: parseFloat(spot.longitude.toString()),
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           });
+          setLoading(false);
+          return;
+        }
+
+        // Option 2: Géocoder à partir de la ville et du pays
+        if (spot.city && spot.country) {
+          // Demander la permission de géolocalisation
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            setError("Permission de localisation refusée");
+            setLoading(false);
+            return;
+          }
+
+          // Créer l'adresse à partir des données disponibles
+          const address = `${spot.city}, ${spot.country}`;
+          
+          // Géocoder l'adresse pour obtenir les coordonnées
+          const geocode = await Location.geocodeAsync(address);
+          
+          if (geocode.length > 0) {
+            const { latitude, longitude } = geocode[0];
+            setLocation({
+              latitude,
+              longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            });
+          } else {
+            setError(`Impossible de trouver les coordonnées pour ${address}`);
+          }
         } else {
-          setError("Impossible de trouver les coordonnées pour cette adresse");
+          setError("Informations de localisation insuffisantes");
         }
       } catch (err) {
         console.error("Erreur lors de la géolocalisation:", err);
@@ -63,13 +75,14 @@ export default function DetailsSpotMaps({ spot }: DetailsSpotMapsProps) {
       }
     }
 
-    getLocationFromAddress();
+    setupLocation();
   }, [spot]);
 
   if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#006A71" />
+        <Text style={styles.loadingText}>Chargement de la carte...</Text>
       </View>
     );
   }
@@ -102,8 +115,8 @@ export default function DetailsSpotMaps({ spot }: DetailsSpotMapsProps) {
             latitude: location.latitude,
             longitude: location.longitude,
           }}
-          title={spot.fields["Surf Break"]?.[0] || "Spot de surf"}
-          description={spot.fields.Address || ""}
+          title={spot.spot_name || "Spot de surf"}
+          description={`${spot.city || ''}, ${spot.country || ''}`}
         />
       </MapView>
     </View>
@@ -119,6 +132,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     borderRadius: 12,
     overflow: 'hidden',
+    backgroundColor: '#f5f5f5',
   },
   map: {
     ...StyleSheet.absoluteFillObject,
@@ -127,5 +141,11 @@ const styles = StyleSheet.create({
     color: '#ff6b6b',
     textAlign: 'center',
     padding: 10,
+    fontSize: 16,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#666',
+    fontSize: 14,
   },
 });
