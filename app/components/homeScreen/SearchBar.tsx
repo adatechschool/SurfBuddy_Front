@@ -20,7 +20,7 @@ const SearchBar = ({ value, onChangeText }: SearchBarProps) => {
             style={styles.searchIcon} 
           />
           <TextInput
-            placeholder="Rechercher un spot..."
+            placeholder="Search for a spot..."
             value={value}
             onChangeText={onChangeText}
             style={styles.input}

@@ -5,37 +5,81 @@ import {
   ScrollView,
   Text,
   ActivityIndicator,
-  Dimensions,
   useWindowDimensions,
 } from "react-native";
 import SpotCard from "./components/homeScreen/SpotCard";
 import SearchBar from "./components/homeScreen/SearchBar";
 import style from "@/styles/global";
-import airtableService from "@/airtableService";
-import type { AirtableRecord } from "@/airtableService";
+import { useRouter, usePathname,Link } from "expo-router";
+import { Spot } from './types/Spot';
+
+// Adresse IP de l'API local (PC de Molid)
+const API_URL = "http://192.168.13.5:8000";   // Remplacez X par votre adresse IP locale
 
 export default function HomeScreen() {
   const [search, setSearch] = useState("");
-  const [spots, setSpots] = useState<AirtableRecord[]>([]);
+  const [spots, setSpots] = useState<Spot[]>([]);
+  const [filteredSpots, setFilteredSpots] = useState<Spot[]>([]);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
 
+  useEffect(() => {
+    // Charger les données de l'API locale au montage du composant
+    fetch(`${API_URL}/spots`)
+      .then((response) => response.json())
+      .then((data: any[]) => {
+        // Transformer les données pour gérer les images base64
+        const processedData = data.map((spot: any) => ({
+          ...spot,
+          // Créer une URL utilisable pour l'image si elle existe
+          spotPictureUrl: spot.spot_picture 
+            ? `data:image/jpeg;base64,${spot.spot_picture}` 
+            : null
+        }));
+        
+        setSpots(processedData);
+        setFilteredSpots(processedData);
+        setLoading(false);
+        console.log("Nombre de spots chargés:", processedData.length);
+      })
+      .catch((error) => {
+        console.error("Erreur lors du chargement du JSON:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  // Filtrer les spots quand la recherche change
+  useEffect(() => {
+    if (search.trim() === "") {
+      setFilteredSpots(spots);
+    } else {
+      const searchLower = search.toLowerCase();
+      const filtered = spots.filter(
+        (spot) =>
+          spot.spot_name?.toLowerCase().includes(searchLower) ||
+          spot.city?.toLowerCase().includes(searchLower) ||
+          spot.country?.toLowerCase().includes(searchLower)
+      );
+      setFilteredSpots(filtered);
+    }
+  }, [search, spots]);
+
   // Détermine le nombre de colonnes basé sur la largeur de l'écran
   const getColumnCount = () => {
-    if (width >= 1024) return 3; // Grand écran: 3 colonnes
-    if (width >= 768) return 2;  // Écran moyen: 2 colonnes
-    return 1; // Petit écran: 1 colonne
+    if (width >= 1024) return 3; 
+    if (width >= 768) return 2; 
+    return 1;
   };
 
   const columnCount = getColumnCount();
-  
+
   // Organise les spots en colonnes
   const organizeSpotsByColumns = () => {
     if (columnCount === 1) {
       // Retourne un layout vertical pour les mobiles
       return (
         <View style={styles.singleColumnContainer}>
-          {spots.map((spot) => (
+          {filteredSpots.map((spot) => (
             <View key={spot.id} style={styles.gridItem}>
               <SpotCard spot={spot} />
             </View>
@@ -45,12 +89,12 @@ export default function HomeScreen() {
     } else {
       // Retourne un layout multi-colonnes pour les tablettes/desktop
       const columns = Array.from({ length: columnCount }, () => []);
-      
-      spots.forEach((spot, index) => {
+
+      filteredSpots.forEach((spot, index) => {
         const columnIndex = index % columnCount;
         columns[columnIndex].push(spot);
       });
-      
+
       return (
         <View style={styles.multiColumnContainer}>
           {columns.map((columnSpots, colIndex) => (
@@ -67,26 +111,6 @@ export default function HomeScreen() {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const results = await airtableService.getSpots(search);
-        setSpots(results);
-      } catch (error) {
-        console.error("Erreur lors du chargement des spots:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const timeout = setTimeout(() => {
-      fetchData();
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [search]);
-
   return (
     <View style={{ flex: 1, backgroundColor: style.color.background }}>
       <SearchBar value={search} onChangeText={setSearch} />
@@ -98,7 +122,7 @@ export default function HomeScreen() {
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.innerContainer}>
-            {spots.length > 0 ? (
+            {filteredSpots.length > 0 ? (
               organizeSpotsByColumns()
             ) : (
               <Text style={styles.noResults}>
@@ -118,21 +142,21 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingVertical: 16,
     paddingBottom: 80,
-    alignItems: 'center',
+    alignItems: "center",
   },
   innerContainer: {
-    width: '100%',
+    width: "100%",
     maxWidth: 1200, // Limite la largeur sur très grands écrans
-    alignItems: 'center',
+    alignItems: "center",
   },
   singleColumnContainer: {
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
   },
   multiColumnContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
     paddingHorizontal: 8,
   },
   column: {
@@ -140,7 +164,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   gridItem: {
-    width: '100%',
+    width: "100%",
     marginVertical: 8,
   },
   loadingContainer: {

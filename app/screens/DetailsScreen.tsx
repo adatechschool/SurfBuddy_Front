@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import airtableService from '@/airtableService';
-import type { AirtableRecord } from '@/airtableService';
+import { Spot } from '../types/Spot';
 import DetailsSpotImage from '../components/detailsScreen/DetailsSpotImage';
 import DetailsSpotContent from '../components/detailsScreen/DetailsSpotContent';
 import DetailsSpotMaps from '../components/detailsScreen/DetailsSpotMaps';
 import style from '@/styles/global';
 
+// Remplacez par votre URL d'API
+const API_URL = "http://192.168.13.5:8000";
+
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
-  const [spot, setSpot] = useState<AirtableRecord | null>(null);
+  const [spot, setSpot] = useState<Spot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,8 +26,16 @@ export default function DetailsScreen() {
 
       try {
         setLoading(true);
-        // Supposons que vous avez une méthode pour obtenir un spot par ID
-        const spotData = await airtableService.getSpotById(id as string);
+        
+        // Récupérer les détails du spot depuis votre API Symfony
+        const response = await fetch(`${API_URL}/spots/${id}`);
+        
+        if (!response.ok) {
+          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        }
+        
+        const spotData = await response.json();
+        
         if (spotData) {
           setSpot(spotData);
         } else {
@@ -46,6 +56,7 @@ export default function DetailsScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={style.color.primary} />
+        <Text style={styles.loadingText}>Chargement des détails...</Text>
       </View>
     );
   }
@@ -53,20 +64,27 @@ export default function DetailsScreen() {
   if (error || !spot) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error || "Spot non disponible"}</Text>
+        <Text style={styles.errorText}>
+          {error || "Spot non disponible"}
+        </Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <DetailsSpotImage spot={spot} />
-      <DetailsSpotContent spot={spot} />
-      
-      {/* Section carte */}
-      <View style={styles.mapSection}>
-        <Text style={styles.sectionTitle}>Localisation</Text>
-        <DetailsSpotMaps spot={spot} />
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        {/* Section image */}
+        <DetailsSpotImage spot={spot} />
+        
+        {/* Section contenu */}
+        <DetailsSpotContent spot={spot} />
+        
+        {/* Section carte */}
+        <View style={styles.mapSection}>
+          <Text style={styles.sectionTitle}>Localisation</Text>
+          <DetailsSpotMaps spot={spot} />
+        </View>
       </View>
     </ScrollView>
   );
@@ -77,35 +95,41 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: style.color.background,
   },
-  contentContainer: {
-    padding: 16,
-    paddingBottom: 30,
+  content: {
+    padding: 15,
+    paddingBottom: 80, // Pour éviter que le contenu soit caché par la navigation
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: style.color.background,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: style.color.text,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: style.color.background,
     padding: 20,
   },
   errorText: {
-    color: '#ff6b6b',
     fontSize: 16,
+    color: '#ff6b6b',
     textAlign: 'center',
   },
   mapSection: {
-    marginTop: 20,
     alignItems: 'center',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
     color: style.color.text,
-    alignSelf: 'flex-start',
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });

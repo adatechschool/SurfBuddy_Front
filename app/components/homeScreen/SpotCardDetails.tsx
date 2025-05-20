@@ -1,16 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import type { AirtableRecord } from '@/airtableService';
-import style from '@/styles/global';
+import {Spot} from '../../types/Spot';
 
-export default function SpotCardDetails({ item }: { item: AirtableRecord }) {
-  const surfBreak = item.fields["Surf Break"]?.[0] ?? 'Inconnu';
-  const address = item.fields.Address ?? 'Adresse non disponible';
-
+export default function SpotCardDetails({ item }: { item: Spot }) {
+  const surfBreak = item.spot_name ?? 'Inconnu';
+  const city = item.city ?? 'Inconnu';
+  const country = item.country ?? 'Inconnu';
+  const difficulty = item.difficulty ?? 'Inconnu';
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{surfBreak}</Text>
-      <Text style={styles.address}>{address}</Text>
+      <Text style={styles.city}>{city}, {country}</Text>
+      <Text style={styles.city}>{difficulty}</Text>
     </View>
   );
 }
@@ -28,7 +30,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 5,
   },
-  address: {
+  city: {
     fontSize: 14,
     color: '#666',
     textAlign: 'center',
