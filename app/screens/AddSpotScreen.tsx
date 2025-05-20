@@ -68,6 +68,9 @@ function AddSpotScreen() {
   });
   const [showMapModal, setShowMapModal] = useState<boolean>(false);
 
+  // Modifiez l'état pour le type de spot
+  const [spotType, setSpotType] = useState<string>("beach");
+
   const difficultyLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
   // Redirection si l'utilisateur n'est pas connecté
@@ -149,38 +152,106 @@ function AddSpotScreen() {
     }
   };
 
+  // Ajoutez cette fonction pour gérer la sélection du type de spot
+  const handleSpotTypeSelection = (type: string) => {
+    setSpotType(type);
+  };
+
   // Validation et enregistrement du spot
-  const handleAddSpot = () => {
+  const handleAddSpot = async () => {
     if (!spotName.trim()) {
-      Alert.alert("Error", "Please enter a spot name");
+      Alert.alert("Erreur", "Veuillez entrer un nom de spot");
       return;
     }
 
     if (!destination.trim()) {
-      Alert.alert("Erreur", "Please enter a destination");
+      Alert.alert("Erreur", "Veuillez entrer une destination");
       return;
     }
 
-    // Ici vous pouvez ajouter le code pour enregistrer le spot dans votre base de données
-    // Par exemple, un appel API à votre backend Symfony
-    const spotData = {
-      name: spotName,
-      difficulty,
-      destination,
-      coordinates,
-      imageUri,
-      // Ajoutez d'autres champs nécessaires
-    };
-    
-    console.log("Données du spot à envoyer:", spotData);
+    try {
+      // Préparation des données à envoyer
+      const spotData = {
+        spot_name: spotName,
+        difficulty: difficulty,
+        city: selectedCity === "Other..." ? customCity : selectedCity,
+        country: selectedCountry === "Other..." ? customCountry : selectedCountry,
+        spot_type: spotType,
+        latitude: coordinates.latitude.toString(),
+        longitude: coordinates.longitude.toString(),
+        spot_picture: imageUri ? await convertImageToBase64(imageUri) : null,
+        // Ajoutez d'autres champs si nécessaire
+        users_id: user?.id // Assurez-vous que l'utilisateur est connecté
+      };
+      
+      console.log("Données envoyées:", JSON.stringify(spotData));
+      
+      // URL de votre API backend
+      const API_URL = "http://192.168.13.5:8000"; // Votre URL
+      const endpoint = "/addspots"; // Endpoint corrigé sans le préfixe /spots
+      
+      console.log("Envoi à l'URL:", `${API_URL}${endpoint}`);
+      
+      // Appel à l'API
+      const rawResponse = await fetch(`${API_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(spotData)
+      });
+      
+      console.log("Statut de la réponse:", rawResponse.status, rawResponse.statusText);
+      console.log("Headers de la réponse:", JSON.stringify([...rawResponse.headers.entries()]));
+      
+      // Récupérer le texte brut de la réponse
+      const responseText = await rawResponse.text();
+      console.log("Réponse brute du serveur (50 premiers caractères):", responseText.substring(0, 50));
+      
+      if (!rawResponse.ok) {
+        throw new Error(`Erreur HTTP ${rawResponse.status}: ${responseText.substring(0, 100)}`);
+      }
+      
+      // Seulement si la réponse est OK, essayer de parser en JSON
+      const result = JSON.parse(responseText);
+      
+      // Afficher un message de succès
+      Alert.alert("Succès", `Le spot "${spotName}" a été ajouté avec succès !`, [
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
+      ]);
+    } catch (error) {
+      console.error("Erreur détaillée:", error);
+      Alert.alert("Erreur", "Impossible d'ajouter le spot. Veuillez réessayer.");
+    }
+  };
 
-    // Simulation de succès (à remplacer par votre appel API réel)
-    Alert.alert("Success", `Spot "${spotName}" add with success!`, [
-      {
-        text: "OK",
-        onPress: () => router.back(),
-      },
-    ]);
+  // Fonction pour convertir une image en base64
+  const convertImageToBase64 = async (uri: string): Promise<string | null> => {
+    try {
+      // Récupérer le contenu du fichier
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          // Le résultat contient "data:image/jpeg;base64," que nous devons retirer
+          const base64String = reader.result as string;
+          // Extraire uniquement la partie base64 sans le préfixe
+          const base64Data = base64String.split(',')[1];
+          resolve(base64Data);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error("Erreur lors de la conversion de l'image en base64:", error);
+      return null;
+    }
   };
 
   // Demander la localisation actuelle de l'utilisateur
@@ -304,8 +375,33 @@ function AddSpotScreen() {
             <Text style={styles.customLocationText}>City added: {customCity}</Text>
           ) : null}
 
+          {/* Section Type de spot */}
+          <Text style={styles.sectionTitle}>Type de spot</Text>
+          
+          <View style={styles.spotTypeContainer}>
+            {["beach", "point", "reef"].map((type) => (
+              <TouchableOpacity
+                key={type}
+                style={[
+                  styles.spotTypeOption,
+                  spotType === type && styles.selectedSpotType
+                ]}
+                onPress={() => handleSpotTypeSelection(type)}
+              >
+                <Text 
+                  style={[
+                    styles.spotTypeText,
+                    spotType === type && styles.selectedSpotTypeText
+                  ]}
+                >
+                  {type}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           {/* Section Coordonnées */}
-          <Text style={styles.label}>Coordinates:</Text>
+          <Text style={styles.sectionTitle}>Coordinates</Text>
           <View style={styles.coordinatesContainer}>
             <Text style={styles.coordinates}>
               Lat: {coordinates.latitude.toFixed(6)}, Long: {coordinates.longitude.toFixed(6)}
@@ -463,7 +559,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 10,
     color: "#006A71",
   },
   imageSection: {
@@ -484,9 +580,7 @@ const styles = StyleSheet.create({
   },
   formSection: {
     marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
-    paddingBottom: 20,
+    width: '100%',
   },
   previewSection: {
     marginBottom: 20,
@@ -516,9 +610,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   pickerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
+    backgroundColor: '#F2EFE7',
+    borderRadius: 8,
+    marginBottom: 10,
   },
   difficultyOption: {
     padding: 10,
@@ -629,6 +723,33 @@ const styles = StyleSheet.create({
   mapModalButtonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  spotTypeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  spotTypeOption: {
+    flex: 1,
+    padding: 12,
+    backgroundColor: '#F2EFE7',
+    borderRadius: 8,
+    alignItems: 'center',
+    marginHorizontal: 5,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  selectedSpotType: {
+    backgroundColor: '#006A71',
+    borderColor: '#006A71',
+  },
+  spotTypeText: {
+    fontSize: 14,
+    color: '#444',
+    fontWeight: 'bold',
+  },
+  selectedSpotTypeText: {
+    color: '#F2EFE7',
   },
 });
 
