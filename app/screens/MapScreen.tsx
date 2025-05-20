@@ -35,8 +35,8 @@ export default function MapScreen() {
         
         setSpots(spotsWithCoordinates);
       } catch (err) {
-        console.error("Erreur lors du chargement des spots:", err);
-        setError("Erreur lors du chargement des spots");
+        console.error("Error while chargin spots:", err);
+        setError("Error while chargin spots");
       } finally {
         setLoading(false);
       }
@@ -92,7 +92,7 @@ export default function MapScreen() {
                 latitude,
                 longitude
               }}
-              title={spot.fields["Surf Break"]?.[0] || "Spot de surf"}
+              title={spot.fields["Surf Break"]?.[0] || "Surf spot"}
               description={spot.fields.Country || ""}
               onCalloutPress={() => handleMarkerPress(spot.id)}
             >
@@ -104,10 +104,10 @@ export default function MapScreen() {
                       style={styles.calloutImage}
                     />
                   )}
-                  <Text style={styles.calloutTitle}>{spot.fields["Surf Break"]?.[0] || "Spot de surf"}</Text>
+                  <Text style={styles.calloutTitle}>{spot.fields["Surf Break"]?.[0] || "Surf spot"}</Text>
                   <Text style={styles.calloutSubtitle}>{spot.fields.Country || ""}</Text>
                   <Text style={styles.calloutDescription}>
-                    {spot.fields.DifficultyLevel ? `Difficulté: ${spot.fields.DifficultyLevel}` : ""}
+                    {spot.fields.DifficultyLevel ? `Difficulty: ${spot.fields.DifficultyLevel}` : ""}
                   </Text>
                 </View>
               </Callout>

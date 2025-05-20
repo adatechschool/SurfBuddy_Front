@@ -40,7 +40,7 @@ export default function HomeScreen() {
         setSpots(processedData);
         setFilteredSpots(processedData);
         setLoading(false);
-        console.log("Nombre de spots chargés:", processedData.length);
+        console.log("Number of spots charged:", processedData.length);
       })
       .catch((error) => {
         console.error("Erreur lors du chargement du JSON:", error);
@@ -127,8 +127,8 @@ export default function HomeScreen() {
             ) : (
               <Text style={styles.noResults}>
                 {search.trim()
-                  ? "Aucun spot trouvé pour cette recherche"
-                  : "Aucun spot disponible"}
+                  ? "No spot found"
+                  : "No spot available"}
               </Text>
             )}
           </View>

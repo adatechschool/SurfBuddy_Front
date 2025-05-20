@@ -31,7 +31,7 @@ export default function DetailsScreen() {
         const response = await fetch(`${API_URL}/spots/${id}`);
         
         if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         
         const spotData = await response.json();
@@ -39,11 +39,11 @@ export default function DetailsScreen() {
         if (spotData) {
           setSpot(spotData);
         } else {
-          setError("Spot non trouvé");
+          setError("Spot not found");
         }
       } catch (err) {
-        console.error("Erreur lors du chargement des détails du spot:", err);
-        setError("Erreur lors du chargement des détails");
+        console.error("Error while charging spot details:", err);
+        setError("Error while charging details");
       } finally {
         setLoading(false);
       }
@@ -56,7 +56,7 @@ export default function DetailsScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={style.color.primary} />
-        <Text style={styles.loadingText}>Chargement des détails...</Text>
+        <Text style={styles.loadingText}>Charging details...</Text>
       </View>
     );
   }
