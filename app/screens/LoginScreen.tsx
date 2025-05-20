@@ -41,7 +41,7 @@ const LoginScreen = () => {
       <View style={styles.spacer}></View>
 
       <FormContentProfile />
-      <ButtonLogin onPress={() => console.log("Connexion")} />
+      <ButtonLogin onPress={() => console.log("Login")} />
     </ScrollView>
   );
 };

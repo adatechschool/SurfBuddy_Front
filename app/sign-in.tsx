@@ -32,7 +32,7 @@ export default function SignIn() {
       await signIn(email, password); 
       router.replace('/'); 
     } catch (err) {
-      setError('Échec de la connexion. Veuillez réessayer.');
+      setError('Login Failed. Please try again.');
       console.error(err);
     } finally {
       setIsLoading(false); 
@@ -41,7 +41,7 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: globalStyle.color.secondary }]}>Connexion</Text>
+      <Text style={[styles.title, { color: globalStyle.color.secondary }]}>Login</Text>
       
       {error ? <Text style={styles.error}>{error}</Text> : null}
       
