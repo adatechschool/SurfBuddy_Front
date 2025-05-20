@@ -14,10 +14,10 @@ const ButtonLogout: React.FC<ButtonLogoutProps> = ({
   color = style.color.secondary,
   size = 24
 }) => {
-  const { isAuthenticated, signOut } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   
   const handleSignOut = () => {
-    signOut();
+    logout();
     router.replace('/');
   };
   

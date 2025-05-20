@@ -1,35 +1,69 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Icône pour cacher/afficher
-import style from '../../../styles/global'; // Import du style global
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import style from '../../../styles/global';
+import { useAuth } from '../../context/AuthContext'; // Authentication context
 
-// Définir un type pour les champs qui peuvent être focalisés
-type FocusableField = 'nom' | 'email' | 'password' | 'confirmPassword' | null;
+type FocusableField = 'name' | 'email' | 'password' | 'confirmPassword' | null;
 
 const FormContentProfile = () => {
-  const [nom, setNom] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  
-  // État pour gérer le focus des champs avec le type correct
   const [focusedField, setFocusedField] = useState<FocusableField>(null);
+
+  const { login } = useAuth(); // method to update the connected user
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill all required fields.');
+      return;
+    }
+
+    // Ensure passwords match before submitting
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://192.168.12.202:8000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Login failed');
+      }
+
+      const userData = await response.json();
+      login(userData); // update user context
+      Alert.alert('Success', `Welcome ${userData.alias || name}!`);
+    } catch (error) {
+      Alert.alert('Login error', error instanceof Error ? error.message : 'An unknown error occurred');
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {/* Champ Nom */}
+      {/* Name */}
       <TextInput 
-        style={[styles.input, focusedField === 'nom' && styles.focusedInput]}
-        placeholder="Your pseudo" 
+        style={[styles.input, focusedField === 'name' && styles.focusedInput]}
+        placeholder="Your alias" 
         placeholderTextColor={style.color.text}
-        value={nom} 
-        onChangeText={setNom}
-        onFocus={() => setFocusedField('nom')}
+        value={name} 
+        onChangeText={setName}
+        onFocus={() => setFocusedField('name')}
         onBlur={() => setFocusedField(null)}
       />
 
-      {/* Champ Email */}
+      {/* Email */}
       <TextInput 
         style={[styles.input, focusedField === 'email' && styles.focusedInput]}
         placeholder="Your email" 
@@ -39,9 +73,10 @@ const FormContentProfile = () => {
         onChangeText={setEmail}
         onFocus={() => setFocusedField('email')}
         onBlur={() => setFocusedField(null)}
+        autoCapitalize="none"
       />
 
-      {/* Champ Mot de passe */}
+      {/* Password */}
       <View style={[styles.passwordContainer, focusedField === 'password' && styles.focusedInput]}>
         <TextInput 
           style={styles.passwordInput} 
@@ -58,7 +93,7 @@ const FormContentProfile = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Champ Confirmation du mot de passe */}
+      {/* Confirm password */}
       <View style={[
         styles.passwordContainer, 
         focusedField === 'confirmPassword' && styles.focusedInput,
@@ -76,10 +111,22 @@ const FormContentProfile = () => {
         />
       </View>
 
-      {/* Message d'erreur si les mots de passe ne correspondent pas */}
+      {/* Error if passwords don't match */}
       {password !== confirmPassword && confirmPassword.length > 0 && (
         <Text style={styles.errorText}>The passwords don't match!</Text>
       )}
+
+      {/* Login Button */}
+      <TouchableOpacity 
+        style={[
+          styles.button,
+          (!email || !password || password !== confirmPassword) && styles.buttonDisabled
+        ]} 
+        onPress={handleLogin}
+        disabled={!email || !password || password !== confirmPassword}
+      >
+        <Text style={styles.buttonText}>Connect</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -133,6 +180,22 @@ const styles = StyleSheet.create({
   },
   errorBorder: {
     borderColor: 'red',
+  },
+  button: {
+    marginTop: 10,
+    backgroundColor: style.color.secondary,
+    padding: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#999',
+    opacity: 0.7,
+  },
+  buttonText: {
+    color: 'white',
+    fontFamily: style.fonts.regular,
+    fontSize: 16,
   },
 });
 

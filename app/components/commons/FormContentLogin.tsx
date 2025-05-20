@@ -17,10 +17,10 @@ const FormContentLogin = ({ onSubmit }: FormContentLoginProps) => {
 
   const validateEmail = () => {
     if (!email) {
-      setEmailError('Veuillez entrer votre email');
+      setEmailError('Please enter your email');
       return false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('Format d\'email invalide');
+      setEmailError('Email format invalid');
       return false;
     }
     setEmailError('');
@@ -61,7 +61,7 @@ const FormContentLogin = ({ onSubmit }: FormContentLoginProps) => {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Mot de passe"
+          placeholder="Password"
           value={password}
           onChangeText={setPassword}
           onBlur={validatePassword}

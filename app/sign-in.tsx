@@ -1,56 +1,67 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
-import { useAuth } from './context/AuthContext';
-import globalStyle from '../styles/global';
+import React, { useState } from 'react'; 
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native'; 
+import { router } from 'expo-router'; 
+import { useAuth } from './context/AuthContext'; 
+import globalStyle from '../styles/global'; 
 import FormContentLogin from './components/commons/FormContentLogin';
 
 export default function SignIn() {
-  const { signIn, setUser } = useAuth(); 
+  const { login } = useAuth();
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
   const handleSignIn = async (email: string, password: string) => {
-    const hardcodedEmail = 'test@example.com';
-    const hardcodedPassword = 'password123';
-
-    if (email === hardcodedEmail && password === hardcodedPassword) {
-      setUser({
-        id: '123', 
-        name: 'Utilisateur Test', 
-        email, 
-      });
-    } else {
-      setError('Identifiants invalides');
-      return;
-    }
-    
     setIsLoading(true);
     setError('');
-
+    
     try {
-      await signIn(email, password); 
-      router.replace('/'); 
+      // Appel à votre API de backend pour l'authentification
+      const response = await fetch('http://192.168.12.202:8000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Login failed' }));
+        throw new Error(errorData.message || 'Invalid credentials');
+      }
+
+      const userData = await response.json();
+      
+      // Vérifier que les données utilisateur sont valides
+      if (!userData || !userData.id || !userData.email) {
+        throw new Error('Invalid user data received');
+      }
+      
+      // Mettre à jour le contexte avec les données utilisateur
+      login(userData);
+      
+      // Rediriger vers la page d'accueil
+      router.replace('/');
     } catch (err) {
-      setError('Échec de la connexion. Veuillez réessayer.');
+      const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      setError(errorMessage);
       console.error(err);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: globalStyle.color.secondary }]}>Connexion</Text>
+      <Text style={[styles.title, { color: globalStyle.color.secondary }]}>Login</Text>
       
       {error ? <Text style={styles.error}>{error}</Text> : null}
       
-      {/* Le formulaire fait maintenant tout le travail de connexion */}
       <FormContentLogin onSubmit={handleSignIn} />
       
       {isLoading && <ActivityIndicator color="#006A71" size="small" />}
       
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.registerLink}
         onPress={() => router.push('/screens/LoginScreen')}
       >
