@@ -1,26 +1,21 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import ProfileImage from '../components/profileScreen/ProfileImage'; 
+import ProfileImage from '../components/commons/ProfilePicture'; 
 import ProfileContent from '../components/profileScreen/ProfileContent'; 
 import ButtonUpdate from '../components/commons/buttons/ButtonUpdate'; 
 import ButtonDelete from '../components/commons/buttons/ButtonDelete';
 import globalStyle from '../../styles/global'; 
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext'; // Authentication context
 import { router } from 'expo-router';
 
 const ProfileScreen = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) {
       router.replace('/sign-in'); // route absolue recommandée
     }
   }, [user]);
-
-  const handleSignOut = () => {
-    signOut();
-    router.replace('/');
-  };
 
   if (!user) return null;
 

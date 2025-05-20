@@ -14,7 +14,7 @@ import { useRouter, usePathname,Link } from "expo-router";
 import { Spot } from './types/Spot';
 
 // Adresse IP de l'API local (PC de Molid)
-const API_URL = "http://192.168.13.5:8000";   // Remplacez X par votre adresse IP locale
+const API_URL = "http://192.168.12.202:8000";   // Remplacez X par votre adresse IP locale
 
 export default function HomeScreen() {
   const [search, setSearch] = useState("");
@@ -40,7 +40,7 @@ export default function HomeScreen() {
         setSpots(processedData);
         setFilteredSpots(processedData);
         setLoading(false);
-        console.log("Nombre de spots chargés:", processedData.length);
+        console.log("Number of spots charged:", processedData.length);
       })
       .catch((error) => {
         console.error("Erreur lors du chargement du JSON:", error);
@@ -127,8 +127,8 @@ export default function HomeScreen() {
             ) : (
               <Text style={styles.noResults}>
                 {search.trim()
-                  ? "Aucun spot trouvé pour cette recherche"
-                  : "Aucun spot disponible"}
+                  ? "No spot found"
+                  : "No spot available"}
               </Text>
             )}
           </View>
