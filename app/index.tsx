@@ -10,7 +10,7 @@ import {
 import SpotCard from "./components/homeScreen/SpotCard";
 import SearchBar from "./components/homeScreen/SearchBar";
 import style from "@/styles/global";
-import { useRouter, usePathname,Link } from "expo-router";
+import { useRouter, usePathname, Link } from "expo-router";
 import { Spot } from './types/Spot';
 
 // Adresse IP de l'API local (PC de Molid)
@@ -32,11 +32,11 @@ export default function HomeScreen() {
         const processedData = data.map((spot: any) => ({
           ...spot,
           // Créer une URL utilisable pour l'image si elle existe
-          spotPictureUrl: spot.spot_picture 
-            ? `data:image/jpeg;base64,${spot.spot_picture}` 
+          spotPictureUrl: spot.spot_picture
+            ? `data:image/jpeg;base64,${spot.spot_picture}`
             : null
         }));
-        
+
         setSpots(processedData);
         setFilteredSpots(processedData);
         setLoading(false);
@@ -66,8 +66,10 @@ export default function HomeScreen() {
 
   // Détermine le nombre de colonnes basé sur la largeur de l'écran
   const getColumnCount = () => {
-    if (width >= 1024) return 3; 
-    if (width >= 768) return 2; 
+    /*
+    if (width >= 1024) return 3;
+    if (width >= 768) return 2;
+    */
     return 1;
   };
 
@@ -88,6 +90,7 @@ export default function HomeScreen() {
       );
     } else {
       // Retourne un layout multi-colonnes pour les tablettes/desktop
+      /*
       const columns = Array.from({ length: columnCount }, () => []);
 
       filteredSpots.forEach((spot, index) => {
@@ -108,6 +111,8 @@ export default function HomeScreen() {
           ))}
         </View>
       );
+      */
+      return null; // Cette ligne est juste pour éviter une erreur de syntaxe
     }
   };
 
@@ -153,6 +158,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
+  /*
   multiColumnContainer: {
     flexDirection: "row",
     width: "100%",
@@ -163,6 +169,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 8,
   },
+  */
   gridItem: {
     width: "100%",
     marginVertical: 8,
