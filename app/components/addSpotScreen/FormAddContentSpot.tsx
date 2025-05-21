@@ -17,17 +17,17 @@ const FormAddContentSpot = ({
     <View style={styles.container}>
       <Text style={styles.label}>Spot Name :</Text>
       <View style={styles.block}>
-        <Text style={styles.value}>{spotName || "Not defined"}</Text>
+        <Text style={styles.value}>{spotName || "Undefined"}</Text>
       </View>
 
       <Text style={styles.label}>Difficulty Level :</Text>
       <View style={styles.block}>
-        <Text style={styles.value}>{difficultyLevel || "Not defined"}</Text>
+        <Text style={styles.value}>{difficultyLevel || "Undefined"}</Text>
       </View>
 
       <Text style={styles.label}>Destination :</Text>
       <View style={styles.block}>
-        <Text style={styles.value}>{destination || "Not defined"}</Text>
+        <Text style={styles.value}>{destination || "Undefined"}</Text>
       </View>
     </View>
   );
