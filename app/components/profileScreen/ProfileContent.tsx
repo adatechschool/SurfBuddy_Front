@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import profile from '../../../profile.json'; // Assure-toi du bon chemin d'importation
+import { useAuth } from '../../context/AuthContext';
+
+const API_URL = "http://192.168.12.202:8000";
 
 const ProfileContent = () => {
+
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`${API_URL}/users/${user.id}`)
+        .then(response => response.json())
+        .then(data => setProfile(data))
+        .catch(error => console.error("Error while charging progile:", error));
+    }
+  }, [user]);
+
+  if (!profile) return <Text>Charging...</Text>;
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Alias:</Text>
       <View style={styles.block}>
-        <Text style={styles.value}>{profile.username}</Text>
+        <Text style={styles.value}>{profile.alias}</Text>
       </View>
 
       <Text style={styles.label}>Email:</Text>
