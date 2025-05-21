@@ -12,7 +12,7 @@ export default function SpotCardDetails({ item }: { item: Spot }) {
     <View style={styles.container}>
       <Text style={styles.title}>{surfBreak}</Text>
       <Text style={styles.city}>{city}, {country}</Text>
-      <Text style={styles.city}>{difficulty}</Text>
+      <Text style={styles.difficulty}>{difficulty}</Text>
     </View>
   );
 }
@@ -24,13 +24,18 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
     marginBottom: 5,
   },
   city: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
+  difficulty: {
     fontSize: 14,
     color: '#666',
     textAlign: 'center',

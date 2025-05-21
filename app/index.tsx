@@ -140,9 +140,10 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    paddingVertical: 16,
+    paddingVertical: 8,
     paddingBottom: 80,
     alignItems: "center",
+    margin:20,
   },
   innerContainer: {
     width: "100%",

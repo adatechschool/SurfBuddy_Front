@@ -33,7 +33,7 @@ const SpotCard = ({ spot }: SpotCardProps) => {
 const styles = StyleSheet.create({
   card: {
     width: '100%',
-    padding: 20,
+    padding: 18,
     backgroundColor: style.color?.primary || '#f0f0f0',
     borderRadius: 12,
     alignItems: 'center',
