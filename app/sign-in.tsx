@@ -67,11 +67,10 @@ export default function SignIn() {
       >
         <Text style={styles.registerText}>
           No account yet?{' '}
-          </Text>
           <Text style={{ color: globalStyle.color.secondary, fontWeight: 'bold' }}>
             Sign up here
           </Text>
-        
+        </Text>
       </TouchableOpacity>
     </View>
   );

@@ -15,7 +15,7 @@ const ProfileContent = () => {
       fetch(`${API_URL}/users/${user.id}`)
         .then(response => response.json())
         .then(data => setProfile(data))
-        .catch(error => console.error("Error while charging progile:", error));
+        .catch(error => console.error("Error while charging profile:", error));
     }
   }, [user]);
 
