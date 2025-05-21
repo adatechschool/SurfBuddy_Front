@@ -19,7 +19,7 @@ export default function DetailsScreen() {
   useEffect(() => {
     async function fetchSpotDetails() {
       if (!id) {
-        setError("ID du spot non fourni");
+        setError("No spot ID");
         setLoading(false);
         return;
       }

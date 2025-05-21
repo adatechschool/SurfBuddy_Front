@@ -12,9 +12,9 @@ export default function DetailsSpotContent({ spot }: DetailsSpotContentProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{spot.spot_name|| "Spot without type"}</Text>
-      <Text style={styles.location}>{spot.city || "No info on the City"}</Text>
-      <Text style={styles.location}>{spot.country || "No info on the Country"}</Text>
-      
+      <Text style={styles.location}>{spot.city}, {spot.country}</Text>
+      {/* <Text style={styles.location}>{spot.country || "No info on the Country"}</Text>
+       */}
       <View style={styles.infoContainer}>
         <InfoItem label="Difficulty" value={spot.difficulty || "Unspecified"} />
         <InfoItem label="Season Begin" value={spot.season_begin || "Unspecified"} />
@@ -50,12 +50,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: style.color.text,
+    color: style.color.secondary,
     marginBottom: 5,
   },
   location: {
     fontSize: 16,
-    color: style.color.secondary,
+    color: '#666',
     marginBottom: 15,
   },
   infoContainer: {
