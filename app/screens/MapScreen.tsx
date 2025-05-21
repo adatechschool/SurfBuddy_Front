@@ -10,7 +10,7 @@ import style from '@/styles/global';
 const { width, height } = Dimensions.get('window');
 
 // URL de l'API backend
-const API_URL = "http://192.168.12.202:8000";
+const API_URL = "http://192.168.13.5:8000";
 console.log("URL de l'API utilisée:", API_URL);
 
 export default function MapScreen() {
@@ -127,13 +127,13 @@ export default function MapScreen() {
   const getSpotCoordinates = (spot: Spot) => {
     if (!spot) return null;
     
-    // // Vérifier d'abord les coordonnées traitées
-    // if (spot.processedLatitude && spot.processedLongitude) {
-    //   return {
-    //     latitude: spot.processedLatitude,
-    //     longitude: spot.processedLongitude
-    //   };
-    // }
+    // Vérifier d'abord les coordonnées traitées
+    if (spot.processedLatitude && spot.processedLongitude) {
+      return {
+        latitude: spot.processedLatitude,
+        longitude: spot.processedLongitude
+      };
+    }
     
     // Ensuite vérifier les coordonnées originales
     let latitude = null;
