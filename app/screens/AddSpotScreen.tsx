@@ -42,7 +42,12 @@ const destinations: Record<string, string[]> = {
   Australia: ["Bondi Beach", "Byron Bay", "Snapper Rocks", "Other..."],
   Indonesia: ["Bali", "G-Land", "Lombok", "Other..."],
   "South Africa": ["Jeffreys Bay", "Durban", "Cape Town", "Other..."],
-  Brazil: ["Florianópolis", "Fernando de Noronha", "Rio de Janeiro", "Other..."],
+  Brazil: [
+    "Florianópolis",
+    "Fernando de Noronha",
+    "Rio de Janeiro",
+    "Other...",
+  ],
   "Other...": ["Add another city..."],
 };
 
@@ -55,12 +60,15 @@ function AddSpotScreen() {
 
   // États pour la gestion des pays et villes personnalisés
   const [selectedCountry, setSelectedCountry] = useState<string>("France");
-  const [selectedCity, setSelectedCity] = useState<string>(destinations["France"][0]);
+  const [selectedCity, setSelectedCity] = useState<string>(
+    destinations["France"][0]
+  );
   const [customCountry, setCustomCountry] = useState<string>("");
   const [customCity, setCustomCity] = useState<string>("");
-  const [showCustomLocationModal, setShowCustomLocationModal] = useState<boolean>(false);
+  const [showCustomLocationModal, setShowCustomLocationModal] =
+    useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"country" | "city">("country");
-  
+
   // Coordonnées géographiques
   const [coordinates, setCoordinates] = useState<Coordinates>({
     latitude: 43.4832, // Coordonnées par défaut (Biarritz)
@@ -95,7 +103,10 @@ function AddSpotScreen() {
       } else {
         setDestination(customCountry);
       }
-    } else if (selectedCity === "Other..." || selectedCity === "Other City...") {
+    } else if (
+      selectedCity === "Other..." ||
+      selectedCity === "Other City..."
+    ) {
       if (customCity) {
         setDestination(`${customCity}, ${selectedCountry}`);
       } else {
@@ -109,8 +120,9 @@ function AddSpotScreen() {
   // Chargement de l'image
   const handleLoadImage = async () => {
     try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
       if (!permissionResult.granted) {
         Alert.alert(
           "Permission denied",
@@ -175,57 +187,77 @@ function AddSpotScreen() {
         spot_name: spotName,
         difficulty: difficulty,
         city: selectedCity === "Other..." ? customCity : selectedCity,
-        country: selectedCountry === "Other..." ? customCountry : selectedCountry,
+        country:
+          selectedCountry === "Other..." ? customCountry : selectedCountry,
         spot_type: spotType,
         latitude: coordinates.latitude.toString(),
         longitude: coordinates.longitude.toString(),
         spot_picture: imageUri ? await convertImageToBase64(imageUri) : null,
         // Ajoutez d'autres champs si nécessaire
-        users_id: user?.id // Assurez-vous que l'utilisateur est connecté
+        users_id: user?.id, // Assurez-vous que l'utilisateur est connecté
       };
-      
+
       console.log("Données envoyées:", JSON.stringify(spotData));
-      
+
       // URL de votre API backend
-      const API_URL = "http://192.168.13.5:8000"; // Votre URL
+      const API_URL = "http://192.168.1.13:8000"; // Votre URL
       const endpoint = "/addspots"; // Endpoint corrigé sans le préfixe /spots
-      
+
       console.log("Envoi à l'URL:", `${API_URL}${endpoint}`);
-      
+
       // Appel à l'API
       const rawResponse = await fetch(`${API_URL}${endpoint}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        body: JSON.stringify(spotData)
+        body: JSON.stringify(spotData),
       });
-      
-      console.log("Statut de la réponse:", rawResponse.status, rawResponse.statusText);
-      console.log("Headers de la réponse:", JSON.stringify([...rawResponse.headers.entries()]));
-      
+
+      console.log(
+        "Statut de la réponse:",
+        rawResponse.status,
+        rawResponse.statusText
+      );
+      console.log(
+        "Headers de la réponse:",
+        JSON.stringify([...rawResponse.headers.entries()])
+      );
+
       // Récupérer le texte brut de la réponse
       const responseText = await rawResponse.text();
-      console.log("Réponse brute du serveur (50 premiers caractères):", responseText.substring(0, 50));
-      
+      console.log(
+        "Réponse brute du serveur (50 premiers caractères):",
+        responseText.substring(0, 50)
+      );
+
       if (!rawResponse.ok) {
-        throw new Error(`Erreur HTTP ${rawResponse.status}: ${responseText.substring(0, 100)}`);
+        throw new Error(
+          `Erreur HTTP ${rawResponse.status}: ${responseText.substring(0, 100)}`
+        );
       }
-      
+
       // Seulement si la réponse est OK, essayer de parser en JSON
       const result = JSON.parse(responseText);
-      
+
       // Afficher un message de succès
-      Alert.alert("Succès", `Le spot "${spotName}" a été ajouté avec succès !`, [
-        {
-          text: "OK",
-          onPress: () => router.back(),
-        },
-      ]);
+      Alert.alert(
+        "Succès",
+        `Le spot "${spotName}" a été ajouté avec succès !`,
+        [
+          {
+            text: "OK",
+            onPress: () => router.back(),
+          },
+        ]
+      );
     } catch (error) {
       console.error("Erreur détaillée:", error);
-      Alert.alert("Erreur", "Impossible d'ajouter le spot. Veuillez réessayer.");
+      Alert.alert(
+        "Erreur",
+        "Impossible d'ajouter le spot. Veuillez réessayer."
+      );
     }
   };
 
@@ -235,21 +267,24 @@ function AddSpotScreen() {
       // Récupérer le contenu du fichier
       const response = await fetch(uri);
       const blob = await response.blob();
-      
+
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
           // Le résultat contient "data:image/jpeg;base64," que nous devons retirer
           const base64String = reader.result as string;
           // Extraire uniquement la partie base64 sans le préfixe
-          const base64Data = base64String.split(',')[1];
+          const base64Data = base64String.split(",")[1];
           resolve(base64Data);
         };
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
     } catch (error) {
-      console.error("Erreur lors de la conversion de l'image en base64:", error);
+      console.error(
+        "Erreur lors de la conversion de l'image en base64:",
+        error
+      );
       return null;
     }
   };
@@ -258,18 +293,21 @@ function AddSpotScreen() {
   const getCurrentLocation = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      
-      if (status !== 'granted') {
-        Alert.alert("Permission refusée", "L'accès à la localisation est nécessaire pour cette fonctionnalité");
+
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission refusée",
+          "L'accès à la localisation est nécessaire pour cette fonctionnalité"
+        );
         return;
       }
-      
+
       const location = await Location.getCurrentPositionAsync({});
       setCoordinates({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       });
-      
+
       // Ouvrir la carte avec la position actuelle
       setShowMapModal(true);
     } catch (error) {
@@ -346,14 +384,21 @@ function AddSpotScreen() {
               onValueChange={handleCountryChange}
               style={{ color: "#006A71" }}
             >
-              {Object.keys([...Object.keys(destinations), "Other..."].reduce((obj, key) => ({ ...obj, [key]: [] }), {})).map((country) => (
+              {Object.keys(
+                [...Object.keys(destinations), "Other..."].reduce(
+                  (obj, key) => ({ ...obj, [key]: [] }),
+                  {}
+                )
+              ).map((country) => (
                 <Picker.Item label={country} value={country} key={country} />
               ))}
             </Picker>
           </View>
 
           {selectedCountry === "Other..." && customCountry ? (
-            <Text style={styles.customLocationText}>Country: {customCountry}</Text>
+            <Text style={styles.customLocationText}>
+              Country: {customCountry}
+            </Text>
           ) : null}
 
           <Text style={styles.label}>City:</Text>
@@ -363,35 +408,39 @@ function AddSpotScreen() {
               onValueChange={handleCityChange}
               style={{ color: "#006A71" }}
             >
-              {(selectedCountry !== "Other..." 
-                ? destinations[selectedCountry] 
-                : ["Add a city..."]).map((city) => (
+              {(selectedCountry !== "Other..."
+                ? destinations[selectedCountry]
+                : ["Add a city..."]
+              ).map((city) => (
                 <Picker.Item label={city} value={city} key={city} />
               ))}
             </Picker>
           </View>
 
-          {(selectedCity === "Other..." || selectedCity === "Add a city...") && customCity ? (
-            <Text style={styles.customLocationText}>City added: {customCity}</Text>
+          {(selectedCity === "Other..." || selectedCity === "Add a city...") &&
+          customCity ? (
+            <Text style={styles.customLocationText}>
+              City added: {customCity}
+            </Text>
           ) : null}
 
           {/* Section Type de spot */}
           <Text style={styles.sectionTitle}>Type de spot</Text>
-          
+
           <View style={styles.spotTypeContainer}>
             {["beach", "point", "reef"].map((type) => (
               <TouchableOpacity
                 key={type}
                 style={[
                   styles.spotTypeOption,
-                  spotType === type && styles.selectedSpotType
+                  spotType === type && styles.selectedSpotType,
                 ]}
                 onPress={() => handleSpotTypeSelection(type)}
               >
-                <Text 
+                <Text
                   style={[
                     styles.spotTypeText,
-                    spotType === type && styles.selectedSpotTypeText
+                    spotType === type && styles.selectedSpotTypeText,
                   ]}
                 >
                   {type}
@@ -404,16 +453,17 @@ function AddSpotScreen() {
           <Text style={styles.sectionTitle}>Coordinates</Text>
           <View style={styles.coordinatesContainer}>
             <Text style={styles.coordinates}>
-              Lat: {coordinates.latitude.toFixed(6)}, Long: {coordinates.longitude.toFixed(6)}
+              Lat: {coordinates.latitude.toFixed(6)}, Long:{" "}
+              {coordinates.longitude.toFixed(6)}
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.mapButton}
               onPress={() => setShowMapModal(true)}
             >
               <Text style={styles.mapButtonText}>Select on the map</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.mapButton, { backgroundColor: '#4B80AF' }]}
+            <TouchableOpacity
+              style={[styles.mapButton, { backgroundColor: "#4B80AF" }]}
               onPress={getCurrentLocation}
             >
               <Text style={styles.mapButtonText}>Use my position</Text>
@@ -447,17 +497,19 @@ function AddSpotScreen() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
-              {modalMode === "country" ? "Add a country": "Add a City"}
+              {modalMode === "country" ? "Add a country" : "Add a City"}
             </Text>
-            
+
             <TextInput
               style={styles.modalInput}
-              placeholder={modalMode === "country" ? "Country": "City"}
+              placeholder={modalMode === "country" ? "Country" : "City"}
               value={modalMode === "country" ? customCountry : customCity}
-              onChangeText={modalMode === "country" ? setCustomCountry : setCustomCity}
+              onChangeText={
+                modalMode === "country" ? setCustomCountry : setCustomCity
+              }
               autoFocus
             />
-            
+
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: "#ccc" }]}
@@ -472,7 +524,7 @@ function AddSpotScreen() {
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: "#006A71" }]}
                 onPress={() => {
@@ -496,11 +548,7 @@ function AddSpotScreen() {
       </Modal>
 
       {/* Modal pour la carte */}
-      <Modal
-        visible={showMapModal}
-        transparent={false}
-        animationType="slide"
-      >
+      <Modal visible={showMapModal} transparent={false} animationType="slide">
         <View style={styles.mapModalContainer}>
           <MapView
             style={styles.map}
@@ -518,7 +566,7 @@ function AddSpotScreen() {
               onDragEnd={(e) => setCoordinates(e.nativeEvent.coordinate)}
             />
           </MapView>
-          
+
           <View style={styles.mapModalButtons}>
             <TouchableOpacity
               style={[styles.mapModalButton, { backgroundColor: "#ccc" }]}
@@ -526,7 +574,7 @@ function AddSpotScreen() {
             >
               <Text style={styles.mapModalButtonText}>Annuler</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.mapModalButton, { backgroundColor: "#006A71" }]}
               onPress={() => setShowMapModal(false)}
@@ -580,7 +628,7 @@ const styles = StyleSheet.create({
   },
   formSection: {
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
   },
   previewSection: {
     marginBottom: 20,
@@ -610,7 +658,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   pickerContainer: {
-    backgroundColor: '#F2EFE7',
+    backgroundColor: "#F2EFE7",
     borderRadius: 8,
     marginBottom: 10,
   },
@@ -725,31 +773,31 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   spotTypeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 15,
   },
   spotTypeOption: {
     flex: 1,
     padding: 12,
-    backgroundColor: '#F2EFE7',
+    backgroundColor: "#F2EFE7",
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 5,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
   },
   selectedSpotType: {
-    backgroundColor: '#006A71',
-    borderColor: '#006A71',
+    backgroundColor: "#006A71",
+    borderColor: "#006A71",
   },
   spotTypeText: {
     fontSize: 14,
-    color: '#444',
-    fontWeight: 'bold',
+    color: "#444",
+    fontWeight: "bold",
   },
   selectedSpotTypeText: {
-    color: '#F2EFE7',
+    color: "#F2EFE7",
   },
 });
 
