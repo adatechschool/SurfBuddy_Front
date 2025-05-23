@@ -106,16 +106,41 @@ export default function DetailsSpotMaps({ spot }: DetailsSpotMapsProps) {
   return (
     <View style={styles.container}>
       <MapView
+        pointerEvents="none"
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         region={location}
+
+        // SOLUTION 1: Désactiver toutes les interactions
+        scrollEnabled={false}
+        zoomEnabled={false}
+        rotateEnabled={false}
+        pitchEnabled={false}
+        
+        // // SOLUTION 2: Alternative - Garder zoom mais désactiver scroll
+        // scrollEnabled={false}
+        // zoomEnabled={true}
+        // rotateEnabled={false}
+        // pitchEnabled={false}
+        
+        // Désactiver les contrôles par défaut pour une vue plus propre
+        showsUserLocation={false}
+        showsMyLocationButton={false}
+        showsCompass={false}
+        showsScale={true}
+        showsBuildings={false}
+        showsTraffic={false}
+        showsIndoors={false}
+        
+        // Style de carte (optionnel)
+        mapType="standard"
       >
         <Marker
           coordinate={{
             latitude: location.latitude,
             longitude: location.longitude,
           }}
-          title={spot.spot_name || "Spot de surf"}
+          title={spot.spot_name || "Surf spot"}
           description={`${spot.city || ''}, ${spot.country || ''}`}
         />
       </MapView>
@@ -133,6 +158,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#f5f5f5',
+    // Ajouter une bordure pour mieux délimiter la carte
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   map: {
     ...StyleSheet.absoluteFillObject,
