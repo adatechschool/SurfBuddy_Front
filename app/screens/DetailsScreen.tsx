@@ -14,7 +14,7 @@ import DetailsSpotMaps from "../components/detailsScreen/DetailsSpotMaps";
 import style from "@/styles/global";
 
 // Remplacez par votre URL d'API
-const API_URL = "http://localhost:8000";
+const API_URL = "process.env.EXPO_PUBLIC_API_URL";
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();

@@ -36,7 +36,7 @@ const FormContentProfile = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/login', {
+      const response = await fetch('process.env.EXPO_PUBLIC_API_URL/login', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
