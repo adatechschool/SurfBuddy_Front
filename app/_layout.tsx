@@ -31,13 +31,12 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <AuthProvider> {/* Ajout du AuthProvider ici */}
+    <AuthProvider> 
       <SafeAreaProvider>
         <View style={styles.container} onLayout={onLayoutRootView}>
           {/* Header fixe en haut */}
           <Header />
           
-          {/* Contenu principal entre le header et le footer */}
           <View style={styles.content}>
             <Stack
               screenOptions={{
@@ -45,8 +44,6 @@ export default function RootLayout() {
               }}
             />
           </View>
-          
-          {/* Navbar (footer) fixe en bas */}
           <Navbar />
         </View>
       </SafeAreaProvider>

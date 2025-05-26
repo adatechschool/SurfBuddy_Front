@@ -11,7 +11,7 @@ import SpotCard from "./components/homeScreen/SpotCard";
 import SearchBar from "./components/homeScreen/SearchBar";
 import style from "@/styles/global";
 import { useRouter, usePathname, Link } from "expo-router";
-import { Spot } from './types/Spot';
+import { Spot } from "./types/Spot";
 
 // Adresse IP de l'API local (PC de Molid)
 const API_URL = "http://localhost:8000";   // Remplacez X par votre adresse IP locale
@@ -34,7 +34,7 @@ export default function HomeScreen() {
           // Créer une URL utilisable pour l'image si elle existe
           spotPictureUrl: spot.spot_picture
             ? `data:image/jpeg;base64,${spot.spot_picture}`
-            : null
+            : null,
         }));
 
         setSpots(processedData);
@@ -131,9 +131,7 @@ export default function HomeScreen() {
               organizeSpotsByColumns()
             ) : (
               <Text style={styles.noResults}>
-                {search.trim()
-                  ? "No spot found"
-                  : "No spot available"}
+                {search.trim() ? "No spot found" : "No spot available"}
               </Text>
             )}
           </View>
@@ -148,7 +146,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingBottom: 80,
     alignItems: "center",
-    margin: 20
+    margin: 20,
   },
   innerContainer: {
     width: "100%",

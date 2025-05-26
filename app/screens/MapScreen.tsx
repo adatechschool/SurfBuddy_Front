@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, ActivityIndicator, Text } from 'react-native';
-import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import * as Location from 'expo-location';
-import { Spot } from '../types/Spot';
-import style from '@/styles/global';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+  Text,
+} from "react-native";
+import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import * as Location from "expo-location";
+import { Spot } from "../types/Spot";
+import style from "@/styles/global";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 // URL de l'API backend
-const API_URL = "http://localhost:8000";
+const API_URL = "http://192.168.1.13:8000";
 console.log("URL de l'API utilisée:", API_URL);
 
 export default function MapScreen() {
@@ -32,78 +38,97 @@ export default function MapScreen() {
     async function fetchAllSpots() {
       try {
         setLoading(true);
-        console.log("Tentative de récupération des spots depuis:", `${API_URL}/spots`);
-        
+        console.log(
+          "Tentative de récupération des spots depuis:",
+          `${API_URL}/spots`
+        );
+
         // Récupérer tous les spots depuis votre API backend
         const response = await fetch(`${API_URL}/spots`);
-        
+
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
         console.log("Spots reçus de l'API:", data);
         console.log("Nombre de spots:", data.length);
-        
+
         setSpots(data);
-        
+
         // Demander la permission de géolocalisation
         const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
+        if (status !== "granted") {
           console.log("Permission de localisation refusée");
           setLoading(false);
           return;
         }
-        
+
         // Traiter les spots pour ajouter des coordonnées si nécessaire
-        const processedSpots = await Promise.all(data.map(async (spot) => {
-          // Vérifier si le spot a déjà des coordonnées valides
-          const existingCoordinates = getSpotCoordinates(spot);
-          if (existingCoordinates) {
-            console.log(`Spot ${spot.id} (${spot.spot_name}) a déjà des coordonnées:`, existingCoordinates);
-            return {
-              ...spot,
-              processedLatitude: existingCoordinates.latitude,
-              processedLongitude: existingCoordinates.longitude
-            };
-          }
-          
-          // Si pas de coordonnées, essayer de géocoder à partir de la ville et du pays
-          if (spot.city && spot.country) {
-            try {
-              const address = `${spot.city}, ${spot.country}`;
-              console.log(`Géocodage de l'adresse pour ${spot.id} (${spot.spot_name}):`, address);
-              
-              const geocode = await Location.geocodeAsync(address);
-              
-              if (geocode.length > 0) {
-                const { latitude, longitude } = geocode[0];
-                console.log(`Coordonnées trouvées pour ${spot.id} (${spot.spot_name}):`, { latitude, longitude });
-                
-                return {
-                  ...spot,
-                  processedLatitude: latitude,
-                  processedLongitude: longitude
-                };
-              } else {
-                console.log(`Aucune coordonnée trouvée pour ${spot.id} (${spot.spot_name})`);
+        const processedSpots = await Promise.all(
+          data.map(async (spot) => {
+            // Vérifier si le spot a déjà des coordonnées valides
+            const existingCoordinates = getSpotCoordinates(spot);
+            if (existingCoordinates) {
+              console.log(
+                `Spot ${spot.id} (${spot.spot_name}) a déjà des coordonnées:`,
+                existingCoordinates
+              );
+              return {
+                ...spot,
+                processedLatitude: existingCoordinates.latitude,
+                processedLongitude: existingCoordinates.longitude,
+              };
+            }
+
+            // Si pas de coordonnées, essayer de géocoder à partir de la ville et du pays
+            if (spot.city && spot.country) {
+              try {
+                const address = `${spot.city}, ${spot.country}`;
+                console.log(
+                  `Géocodage de l'adresse pour ${spot.id} (${spot.spot_name}):`,
+                  address
+                );
+
+                const geocode = await Location.geocodeAsync(address);
+
+                if (geocode.length > 0) {
+                  const { latitude, longitude } = geocode[0];
+                  console.log(
+                    `Coordonnées trouvées pour ${spot.id} (${spot.spot_name}):`,
+                    { latitude, longitude }
+                  );
+
+                  return {
+                    ...spot,
+                    processedLatitude: latitude,
+                    processedLongitude: longitude,
+                  };
+                } else {
+                  console.log(
+                    `No coordinate found for ${spot.id} (${spot.spot_name})`
+                  );
+                  return spot;
+                }
+              } catch (err) {
+                console.error(
+                  `Error while geocoding ${spot.id} (${spot.spot_name}):`,
+                  err
+                );
                 return spot;
               }
-            } catch (err) {
-              console.error(`Erreur lors du géocodage pour ${spot.id} (${spot.spot_name}):`, err);
-              return spot;
             }
-          }
-          
-          return spot;
-        }));
-        
-        // Filtrer les spots qui ont des coordonnées valides
-        const validSpots = processedSpots.filter(spot => 
-          spot.processedLatitude && spot.processedLongitude
+
+            return spot;
+          })
         );
-        
-        console.log("Spots avec coordonnées valides après traitement:", validSpots.length);
+
+        // Filtrer les spots qui ont des coordonnées valides
+        const validSpots = processedSpots.filter(
+          (spot) => spot.processedLatitude && spot.processedLongitude
+        );
+
+        console.log("Spots with validated coodinates:", validSpots.length);
         setSpotsWithCoordinates(validSpots);
       } catch (err) {
         console.error("Error while loading spots:", err);
@@ -118,36 +143,42 @@ export default function MapScreen() {
 
   const handleMarkerPress = (spotId: number) => {
     router.push({
-      pathname: '/screens/DetailsScreen',
-      params: { id: spotId }
+      pathname: "/screens/DetailsScreen",
+      params: { id: spotId },
     });
   };
 
   // Fonction pour extraire les coordonnées d'un spot
   const getSpotCoordinates = (spot: Spot) => {
     if (!spot) return null;
-    
+
     // Vérifier d'abord les coordonnées traitées
     if (spot.processedLatitude && spot.processedLongitude) {
       return {
         latitude: spot.processedLatitude,
-        longitude: spot.processedLongitude
+        longitude: spot.processedLongitude,
       };
     }
-    
+
     // Ensuite vérifier les coordonnées originales
     let latitude = null;
     let longitude = null;
-    
+
     if (spot.latitude && spot.longitude) {
-      latitude = typeof spot.latitude === 'string' ? parseFloat(spot.latitude) : spot.latitude;
-      longitude = typeof spot.longitude === 'string' ? parseFloat(spot.longitude) : spot.longitude;
+      latitude =
+        typeof spot.latitude === "string"
+          ? parseFloat(spot.latitude)
+          : spot.latitude;
+      longitude =
+        typeof spot.longitude === "string"
+          ? parseFloat(spot.longitude)
+          : spot.longitude;
     }
-    
+
     if (latitude && longitude && !isNaN(latitude) && !isNaN(longitude)) {
       return { latitude, longitude };
     }
-    
+
     return null;
   };
 
@@ -155,7 +186,7 @@ export default function MapScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={style.color.primary} />
-        <Text style={styles.loadingText}>Chargement des spots...</Text>
+        <Text style={styles.loadingText}>Charging the spots...</Text>
       </View>
     );
   }
@@ -178,19 +209,25 @@ export default function MapScreen() {
         {/* Marqueur de test */}
         <Marker
           coordinate={{
-            latitude: 43.4832,  // Coordonnées de Biarritz
-            longitude: -1.5586
+            latitude: 43.4832, // Coordonnées de Biarritz
+            longitude: -1.5586,
           }}
           title="Test Marker"
           description="This is a test marker"
         />
-        
+
         {spotsWithCoordinates.map((spot) => {
           const coordinates = getSpotCoordinates(spot);
           if (!coordinates) return null;
-          
-          console.log("Affichage du spot sur la carte:", spot.id, spot.spot_name, coordinates.latitude, coordinates.longitude);
-          
+
+          console.log(
+            "Showing the spot on the map:",
+            spot.id,
+            spot.spot_name,
+            coordinates.latitude,
+            coordinates.longitude
+          );
+
           return (
             <Marker
               key={spot.id}
@@ -203,16 +240,20 @@ export default function MapScreen() {
                 <View style={styles.calloutContainer}>
                   {spot.spot_picture && (
                     <Image
-                      source={{ 
-                        uri: spot.spot_picture.startsWith('data:image') 
-                          ? spot.spot_picture 
-                          : `data:image/jpeg;base64,${spot.spot_picture}` 
+                      source={{
+                        uri: spot.spot_picture.startsWith("data:image")
+                          ? spot.spot_picture
+                          : `data:image/jpeg;base64,${spot.spot_picture}`,
                       }}
                       style={styles.calloutImage}
                     />
                   )}
-                  <Text style={styles.calloutTitle}>{spot.spot_name || "Surf spot"}</Text>
-                  <Text style={styles.calloutSubtitle}>{`${spot.city}, ${spot.country}`}</Text>
+                  <Text style={styles.calloutTitle}>
+                    {spot.spot_name || "Surf spot"}
+                  </Text>
+                  <Text
+                    style={styles.calloutSubtitle}
+                  >{`${spot.city}, ${spot.country}`}</Text>
                   <Text style={styles.calloutDescription}>
                     {spot.difficulty ? `Difficulty: ${spot.difficulty}` : ""}
                   </Text>
@@ -232,57 +273,57 @@ const styles = StyleSheet.create({
     backgroundColor: style.color.background,
   },
   map: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: style.color.background,
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: style.color.background,
     padding: 20,
   },
   errorText: {
     fontSize: 16,
-    color: '#ff6b6b',
-    textAlign: 'center',
+    color: "#ff6b6b",
+    textAlign: "center",
   },
   calloutContainer: {
     width: 200,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
   calloutImage: {
-    width: '100%',
+    width: "100%",
     height: 100,
     borderRadius: 5,
     marginBottom: 5,
   },
   calloutTitle: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
     marginBottom: 2,
   },
   calloutSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginBottom: 5,
   },
   calloutDescription: {
     fontSize: 12,
-    color: '#888',
+    color: "#888",
   },
   loadingText: {
     marginTop: 10,

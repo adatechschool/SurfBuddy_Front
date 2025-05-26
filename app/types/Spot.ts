@@ -1,4 +1,4 @@
-import axios from 'axios'; // Librairie qui permet de faire des appels API
+import axios from "axios"; // Librairie qui permet de faire des appels API
 export interface Spot {
   id: number;
   spot_name: string;
@@ -12,7 +12,7 @@ export interface Spot {
   season_end?: string;
   spot_type?: any;
   users_id?: number;
-  
+
   // Propriétés optionnelles pour compatibilité
   spotPictureUrl?: string; // Si vous l'utilisez encore quelque part
 }
@@ -21,14 +21,14 @@ export interface Spot_details {
   id: number;
   details: Spot;
   createdTime: string;
-  }
+}
 
-  const headers = {
-  'Content-Type': 'application/json',
+const headers = {
+  "Content-Type": "application/json",
 };
-   // Ajouter cette méthode à votre objet BDD
-  const SpotService = {
-    getSpotById: async (id: string): Promise<Spot_details | null> => {
+// Ajouter cette méthode à votre objet BDD
+const SpotService = {
+  getSpotById: async (id: string): Promise<Spot_details | null> => {
     try {
       const response = await axios.get(`http://localhost:8000/${id}`, { headers });
       return response.data;
@@ -36,6 +36,6 @@ export interface Spot_details {
       console.error("Erreur lors de la récupération du spot par ID:", error);
       return null;
     }
-  }
-}
-export default SpotService; 
+  },
+};
+export default SpotService;
