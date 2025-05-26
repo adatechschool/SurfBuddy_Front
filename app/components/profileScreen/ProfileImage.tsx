@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Image, StyleSheet, ActivityIndicator, Text } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 
-<<<<<<< HEAD
-const API_URL = "http://192.168.12.202:8000";
-=======
 const API_URL = "process.env.EXPO_PUBLIC_API_URL";
->>>>>>> bd61a72990636050e0fc3059a16481f76a0c4172
 
 const ProfileImage = () => {
   const { user } = useAuth();

@@ -11,10 +11,14 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import style from "../../../styles/global";
 import { useAuth } from "../../context/AuthContext";
 
-type FocusableField = "email" | "password" | null;
+// Utiliser la variable d'environnement
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+type FocusableField = "email" | "alias" | "password" | null;
 
 const FormContentProfile = () => {
   const [email, setEmail] = useState("");
+  const [alias, setAlias] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [focusedField, setFocusedField] = useState<FocusableField>(null);
@@ -22,23 +26,27 @@ const FormContentProfile = () => {
   const { login } = useAuth();
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill all fields.");
+    if (!email || !alias || !password) {
+      Alert.alert("Error", "Please fill all fields (email, alias, and password).");
       return;
     }
 
     try {
-<<<<<<< HEAD
-      const response = await fetch('http://192.168.12.202:8000/login', {
-=======
-      const response = await fetch('process.env.EXPO_PUBLIC_API_URL/login', {
->>>>>>> bd61a72990636050e0fc3059a16481f76a0c4172
+      console.log("Tentative de connexion à:", `${API_URL}/adduser`);
+      
+      const response = await fetch(`${API_URL}/adduser`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ 
+          email, 
+          alias, 
+          password 
+        }),
       });
+
+      console.log("Statut de la réponse:", response.status);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
@@ -59,6 +67,7 @@ const FormContentProfile = () => {
       Alert.alert("Success", `Welcome ${responseData.user.alias}!`);
 
     } catch (error) {
+      console.error("Erreur de connexion détaillée:", error);
       Alert.alert(
         "Login error",
         error instanceof Error ? error.message : "An unknown error occurred"
@@ -77,6 +86,18 @@ const FormContentProfile = () => {
         value={email}
         onChangeText={setEmail}
         onFocus={() => setFocusedField("email")}
+        onBlur={() => setFocusedField(null)}
+        autoCapitalize="none"
+      />
+
+      {/* Alias - Nouveau champ */}
+      <TextInput
+        style={[styles.input, focusedField === "alias" && styles.focusedInput]}
+        placeholder="Your alias/username"
+        placeholderTextColor={style.color.text}
+        value={alias}
+        onChangeText={setAlias}
+        onFocus={() => setFocusedField("alias")}
         onBlur={() => setFocusedField(null)}
         autoCapitalize="none"
       />
@@ -102,8 +123,8 @@ const FormContentProfile = () => {
           onPress={() => setIsPasswordVisible(!isPasswordVisible)}
         >
           <Icon
-            name={isPasswordVisible ? "eye-slash" : "eye"}
-            size={24}
+            name={isPasswordVisible ? "eye" : "eye-slash"}
+            size={20}
             color={style.color.secondary}
           />
         </TouchableOpacity>
@@ -113,12 +134,12 @@ const FormContentProfile = () => {
       <TouchableOpacity
         style={[
           styles.button,
-          (!email || !password) && styles.buttonDisabled,
+          (!email || !alias || !password) && styles.buttonDisabled,
         ]}
         onPress={handleLogin}
-        disabled={!email || !password}
+        disabled={!email || !alias || !password}
       >
-        <Text style={styles.buttonText}>Log in</Text>
+        <Text style={styles.buttonText}>Create Account</Text>
       </TouchableOpacity>
     </View>
   );
