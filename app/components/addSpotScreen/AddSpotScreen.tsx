@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -12,16 +12,16 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
-import { useAuth } from "../context/AuthContext";
+import Icon from "react-native-vector-icons/FontAwesome";
+import MapView, { Marker} from "react-native-maps";
+import { useAuth } from "../../context/AuthContext";
 import { router } from "expo-router";
-import FormAddContentSpot from "../components/addSpotScreen/FormAddContentSpot";
-import FormAddImageSpot from "../components/addSpotScreen/FormAddImageSpot";
-import ButtonDelete from "../components/commons/buttons/ButtonDelete";
-import ButtonLoadImage from "../components/commons/buttons/ButtonLoadImage";
-import ButtonAddSpot from "../components/addSpotScreen/ButtonAddSpot";
+import FormAddContentSpot from "../addSpotScreen/FormAddContentSpot";
+import FormAddImageSpot from "../addSpotScreen/FormAddImageSpot";
+import ButtonLoadImage from "../commons/buttons/ButtonLoadImage";
+import ButtonAddSpot from "../addSpotScreen/ButtonAddSpot";
 import * as ImagePicker from "expo-image-picker";
 import { Picker } from "@react-native-picker/picker";
-import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import globalStyle from "@/styles/global";
 
@@ -50,6 +50,7 @@ const destinations: Record<string, string[]> = {
   ],
   "Other...": ["Add another city..."],
 };
+
 
 // Utiliser la variable d'environnement correctement
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -323,6 +324,33 @@ function AddSpotScreen() {
     setCoordinates(event.nativeEvent.coordinate);
   };
 
+  const mapRef = useRef<MapView>(null);
+  const [mapZoom, setMapZoom] = useState(0.0922); // Niveau de zoom initial
+
+  // Fonction simple pour zoomer
+  const zoomIn = () => {
+    const newZoom = mapZoom * 0.5; // Divise par 2 pour zoomer
+    setMapZoom(newZoom);
+    mapRef.current?.animateToRegion({
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      latitudeDelta: newZoom,
+      longitudeDelta: newZoom * 0.5,
+    }, 300);
+  };
+
+  // Fonction simple pour dézoomer
+  const zoomOut = () => {
+    const newZoom = Math.min(mapZoom * 2, 10); // Multiplie par 2 pour dézoomer, max 10
+    setMapZoom(newZoom);
+    mapRef.current?.animateToRegion({
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      latitudeDelta: newZoom,
+      longitudeDelta: newZoom * 0.5,
+    }, 300);
+  };
+
   if (!user) {
     return null;
   }
@@ -553,35 +581,44 @@ function AddSpotScreen() {
       <Modal visible={showMapModal} transparent={false} animationType="slide">
         <View style={styles.mapModalContainer}>
           <MapView
+            ref={mapRef}
             style={styles.map}
             initialRegion={{
               latitude: coordinates.latitude,
               longitude: coordinates.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
+              latitudeDelta: mapZoom,
+              longitudeDelta: mapZoom * 0.5,
             }}
             onPress={handleMapPress}
           >
             <Marker
-              coordinate={coordinates}
-              draggable
-              onDragEnd={(e) => setCoordinates(e.nativeEvent.coordinate)}
+              coordinate={{
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
+              }}
+              title="Position sélectionnée"
+              description="Appuyez pour modifier"
             />
           </MapView>
 
-          <View style={styles.mapModalButtons}>
-            <TouchableOpacity
-              style={[styles.mapModalButton, { backgroundColor: "#ccc" }]}
-              onPress={() => setShowMapModal(false)}
-            >
-              <Text style={styles.mapModalButtonText}>Annuler</Text>
+          {/* Boutons de zoom simples */}
+          <View style={styles.simpleZoomControls}>
+            <TouchableOpacity style={styles.simpleZoomButton} onPress={zoomIn}>
+              <Text style={styles.zoomButtonText}>+</Text>
             </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.simpleZoomButton} onPress={zoomOut}>
+              <Text style={styles.zoomButtonText}>-</Text>
+            </TouchableOpacity>
+          </View>
 
+          {/* Bouton fermer */}
+          <View style={styles.mapCloseButtonContainer}>
             <TouchableOpacity
-              style={[styles.mapModalButton, { backgroundColor: "#006A71" }]}
+              style={styles.mapCloseButton}
               onPress={() => setShowMapModal(false)}
             >
-              <Text style={styles.mapModalButtonText}>Confirm</Text>
+              <Text style={styles.mapCloseButtonText}>Fermer</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -800,6 +837,49 @@ const styles = StyleSheet.create({
   },
   selectedSpotTypeText: {
     color: "#F2EFE7",
+  },
+  simpleZoomControls: {
+    position: "absolute",
+    right: 20,
+    top: 100,
+    flexDirection: "column",
+  },
+  simpleZoomButton: {
+    backgroundColor: "white",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  zoomButtonText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  mapCloseButtonContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+  mapCloseButton: {
+    backgroundColor: "#ccc",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  mapCloseButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 

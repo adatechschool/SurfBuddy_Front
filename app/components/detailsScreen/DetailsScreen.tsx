@@ -7,10 +7,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { Spot } from "../types/Spot";
-import DetailsSpotImage from "../components/detailsScreen/DetailsSpotImage";
-import DetailsSpotContent from "../components/detailsScreen/DetailsSpotContent";
-import DetailsSpotMaps from "../components/detailsScreen/DetailsSpotMaps";
+import { Spot } from "../../types/Spot";
+import DetailsSpotImage from "../detailsScreen/DetailsSpotImage";
+import DetailsSpotContent from "../detailsScreen/DetailsSpotContent";
+import DetailsSpotMaps from "../detailsScreen/DetailsSpotMaps";
 import style from "@/styles/global";
 
 // Utiliser la variable d'environnement

@@ -7,7 +7,7 @@ type User = {
   email: string;
   alias?: string;
   name?: string;
-  // Ajoutez d'autres propriétés selon vos besoins
+  user_picture?: string;
 };
 
 // Type pour le contexte d'authentification 

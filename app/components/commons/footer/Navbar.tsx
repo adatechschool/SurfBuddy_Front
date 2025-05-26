@@ -7,6 +7,7 @@ import ButtonLocalisation from './ButtonLocalisation';
 import ButtonAddSpot from './ButtonAddSpot';
 import ButtonProfile from './ButtonProfile';
 import { useRouter, usePathname } from 'expo-router';
+import { useAuth } from '../../../context/AuthContext';
 
 type NavbarProps = {
   onButtonPress?: (buttonName: string) => void;
@@ -15,6 +16,7 @@ type NavbarProps = {
 function Navbar({ onButtonPress }: NavbarProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth(); // Récupérer l'état de connexion
 
   const currentPath = usePathname();
   
@@ -22,10 +24,24 @@ function Navbar({ onButtonPress }: NavbarProps) {
   const isActive = (path: string): boolean => {
     if (path === '/' && currentPath === '/') return true;
     if (path === '/screens/MapScreen' && currentPath === '/screens/MapScreen') return true;
-    if (path === '/screens/AddSpotScreen' && currentPath === '/screens/AddSpotScreen') return true;
-    if (path === '/screens/ProfileScreen' && currentPath === '/screens/ProfileScreen') return true;
+    if (path === '/components/addSpotScreen/AddSpotScreen' && currentPath === '/components/addSpotScreen/AddSpotScreen') return true;
+    if (path === '/components/profileScreen/ProfileScreen' && currentPath === '/components/profileScreen/ProfileScreen') return true;
 
     return false;
+  };
+
+  // Fonction pour gérer le clic sur Add Spot
+  const handleAddSpotPress = () => {
+    if (onButtonPress) onButtonPress("Add Spot");
+    
+    // Vérifier si l'utilisateur est connecté
+    if (!user) {
+      // Rediriger vers la page de connexion si pas connecté
+      router.push('/sign-in');
+    } else {
+      // Aller vers AddSpotScreen si connecté
+      router.push("/components/addSpotScreen/AddSpotScreen");
+    }
   };
   
   return (
@@ -53,27 +69,24 @@ function Navbar({ onButtonPress }: NavbarProps) {
       <ButtonLocalisation
         onPress={() => {
           if (onButtonPress) onButtonPress('Localisation');
-          router.push('/screens/MapScreen');
+          router.push('/mapscreen/MapScreen');
         }}
-        isActive={isActive('/screens/MapScreen')}
+        isActive={isActive('/mapscreen/MapScreen')}
       />
 
-      {/* Bouton 3 */}
+      {/* Bouton 3 - Add Spot avec vérification de connexion */}
       <ButtonAddSpot
-        onPress={() => {
-          if (onButtonPress) onButtonPress("Accueil");
-          router.push("/screens/AddSpotScreen");
-        }}
-        isActive={isActive('/screens/AddSpotScreen')}
+        onPress={handleAddSpotPress}
+        isActive={isActive('/components/addSpotScreen/AddSpotScreen')}
       />
       
       {/* Bouton 4 */}
       <ButtonProfile
         onPress={() => {
           if (onButtonPress) onButtonPress('Profile');
-          router.push('/screens/ProfileScreen');
+          router.push('/components/profileScreen/ProfileScreen');
         }}
-        isActive={isActive('/screens/ProfileScreen')}
+        isActive={isActive('/components/profileScreen/ProfileScreen')}
       />
     </View>
   );
