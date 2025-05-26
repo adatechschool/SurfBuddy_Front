@@ -28,7 +28,11 @@ const FormContentProfile = () => {
     }
 
     try {
+<<<<<<< HEAD
       const response = await fetch('http://192.168.12.202:8000/login', {
+=======
+      const response = await fetch('process.env.EXPO_PUBLIC_API_URL/login', {
+>>>>>>> bd61a72990636050e0fc3059a16481f76a0c4172
         method: 'POST',
         headers: {
           "Content-Type": "application/json",

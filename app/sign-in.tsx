@@ -23,7 +23,7 @@ export default function SignIn() {
 
     try {
       // Appel à votre API de backend pour l'authentification
-      const response = await fetch('http://192.168.12.202:8000/login', {
+      const response = await fetch('process.env.EXPO_PUBLIC_API_URL/login', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",

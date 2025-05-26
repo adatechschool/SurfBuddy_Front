@@ -14,7 +14,7 @@ import { useRouter, usePathname, Link } from "expo-router";
 import { Spot } from "./types/Spot";
 
 // Adresse IP de l'API local (PC de Molid)
-const API_URL = "http://192.168.12.202:8000";   // Remplacez X par votre adresse IP locale
+const API_URL = process.env.EXPO_PUBLIC_API_URL;   // Remplacez X par votre adresse IP locale
 
 export default function HomeScreen() {
   const [search, setSearch] = useState("");

@@ -200,7 +200,7 @@ function AddSpotScreen() {
       console.log("Données envoyées:", JSON.stringify(spotData));
 
       // URL de votre API backend
-      const API_URL = "http://192.168.12.202:8000"; // Votre URL
+      const API_URL = "process.env.EXPO_PUBLIC_API_URL"; // Votre URL
       const endpoint = "/addspots"; // Endpoint corrigé sans le préfixe /spots
 
       console.log("Envoi à l'URL:", `${API_URL}${endpoint}`);
