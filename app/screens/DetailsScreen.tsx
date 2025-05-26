@@ -13,8 +13,8 @@ import DetailsSpotContent from "../components/detailsScreen/DetailsSpotContent";
 import DetailsSpotMaps from "../components/detailsScreen/DetailsSpotMaps";
 import style from "@/styles/global";
 
-// Remplacez par votre URL d'API
-const API_URL = "http://localhost:8000";
+// Utiliser la variable d'environnement
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -32,6 +32,7 @@ export default function DetailsScreen() {
 
       try {
         setLoading(true);
+        console.log("Récupération du spot depuis:", `${API_URL}/spots/${id}`);
 
         // Récupérer les détails du spot depuis votre API Symfony
         const response = await fetch(`${API_URL}/spots/${id}`);

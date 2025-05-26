@@ -9,50 +9,65 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import style from "../../../styles/global";
-import { useAuth } from "../../context/AuthContext"; // Authentication context
+import { useAuth } from "../../context/AuthContext";
 
-type FocusableField = "name" | "email" | "password" | "confirmPassword" | null;
+// Utiliser la variable d'environnement
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+type FocusableField = "email" | "alias" | "password" | null;
 
 const FormContentProfile = () => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [alias, setAlias] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [focusedField, setFocusedField] = useState<FocusableField>(null);
 
-  const { login } = useAuth(); // method to update the connected user
+  const { login } = useAuth();
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill all required fields.");
-      return;
-    }
-
-    // Ensure passwords match before submitting
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
+    if (!email || !alias || !password) {
+      Alert.alert("Error", "Please fill all fields (email, alias, and password).");
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:8000/login', {
+      console.log("Tentative de connexion à:", `${API_URL}/adduser`);
+      
+      const response = await fetch(`${API_URL}/adduser`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ 
+          email, 
+          alias, 
+          password 
+        }),
       });
+
+      console.log("Statut de la réponse:", response.status);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Login failed");
+        
+        if (response.status === 401) {
+          throw new Error("Incorrect email or password.");
+        } else if (response.status === 400) {
+          throw new Error(errorData?.error || "Invalid data.");
+        } else {
+          throw new Error(errorData?.error || "Connection error.");
+        }
       }
 
-      const userData = await response.json();
-      login(userData); // update user context
-      Alert.alert("Success", `Welcome ${userData.alias || name}!`);
+      const responseData = await response.json();
+      
+      // Successful login
+      login(responseData.user);
+      Alert.alert("Success", `Welcome ${responseData.user.alias}!`);
+
     } catch (error) {
+      console.error("Erreur de connexion détaillée:", error);
       Alert.alert(
         "Login error",
         error instanceof Error ? error.message : "An unknown error occurred"
@@ -62,17 +77,6 @@ const FormContentProfile = () => {
 
   return (
     <View style={styles.container}>
-      {/* Name */}
-      <TextInput
-        style={[styles.input, focusedField === "name" && styles.focusedInput]}
-        placeholder="Your alias"
-        placeholderTextColor={style.color.text}
-        value={name}
-        onChangeText={setName}
-        onFocus={() => setFocusedField("name")}
-        onBlur={() => setFocusedField(null)}
-      />
-
       {/* Email */}
       <TextInput
         style={[styles.input, focusedField === "email" && styles.focusedInput]}
@@ -82,6 +86,18 @@ const FormContentProfile = () => {
         value={email}
         onChangeText={setEmail}
         onFocus={() => setFocusedField("email")}
+        onBlur={() => setFocusedField(null)}
+        autoCapitalize="none"
+      />
+
+      {/* Alias - Nouveau champ */}
+      <TextInput
+        style={[styles.input, focusedField === "alias" && styles.focusedInput]}
+        placeholder="Your alias/username"
+        placeholderTextColor={style.color.text}
+        value={alias}
+        onChangeText={setAlias}
+        onFocus={() => setFocusedField("alias")}
         onBlur={() => setFocusedField(null)}
         autoCapitalize="none"
       />
@@ -107,51 +123,23 @@ const FormContentProfile = () => {
           onPress={() => setIsPasswordVisible(!isPasswordVisible)}
         >
           <Icon
-            name={isPasswordVisible ? "eye-slash" : "eye"}
-            size={24}
+            name={isPasswordVisible ? "eye" : "eye-slash"}
+            size={20}
             color={style.color.secondary}
           />
         </TouchableOpacity>
       </View>
 
-      {/* Confirm password */}
-      <View
-        style={[
-          styles.passwordContainer,
-          focusedField === "confirmPassword" && styles.focusedInput,
-          password !== confirmPassword && confirmPassword.length > 0
-            ? styles.errorBorder
-            : null,
-        ]}
-      >
-        <TextInput
-          style={styles.passwordInput}
-          placeholder="Repeat your password"
-          placeholderTextColor={style.color.text}
-          secureTextEntry={!isPasswordVisible}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          onFocus={() => setFocusedField("confirmPassword")}
-          onBlur={() => setFocusedField(null)}
-        />
-      </View>
-
-      {/* Error if passwords don't match */}
-      {password !== confirmPassword && confirmPassword.length > 0 && (
-        <Text style={styles.errorText}>The passwords don't match!</Text>
-      )}
-
       {/* Login Button */}
       <TouchableOpacity
         style={[
           styles.button,
-          (!email || !password || password !== confirmPassword) &&
-            styles.buttonDisabled,
+          (!email || !alias || !password) && styles.buttonDisabled,
         ]}
         onPress={handleLogin}
-        disabled={!email || !password || password !== confirmPassword}
+        disabled={!email || !alias || !password}
       >
-        <Text style={styles.buttonText}>Connect</Text>
+        <Text style={styles.buttonText}>Create Account</Text>
       </TouchableOpacity>
     </View>
   );
@@ -197,15 +185,6 @@ const styles = StyleSheet.create({
   focusedInput: {
     borderColor: style.color.secondary,
     borderRadius: 5,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginTop: -5,
-    fontFamily: style.fonts.regular,
-  },
-  errorBorder: {
-    borderColor: "red",
   },
   button: {
     marginTop: 10,

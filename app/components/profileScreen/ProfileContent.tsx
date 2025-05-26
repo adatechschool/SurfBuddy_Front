@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import profile from "../../../profile.json"; // Assure-toi du bon chemin d'importation
 import { useAuth } from "../../context/AuthContext";
 
-const API_URL = "http://localhost:8000";
+const API_URL = "process.env.EXPO_PUBLIC_API_URL";
 
 const ProfileContent = () => {
   const { user } = useAuth();

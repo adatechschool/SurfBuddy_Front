@@ -51,6 +51,9 @@ const destinations: Record<string, string[]> = {
   "Other...": ["Add another city..."],
 };
 
+// Utiliser la variable d'environnement correctement
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 function AddSpotScreen() {
   const { user } = useAuth();
   const [spotName, setSpotName] = useState("");
@@ -199,9 +202,8 @@ function AddSpotScreen() {
 
       console.log("Données envoyées:", JSON.stringify(spotData));
 
-      // URL de votre API backend
-      const API_URL = "http://localhost:8000"; // Votre URL
-      const endpoint = "/addspots"; // Endpoint corrigé sans le préfixe /spots
+      // Endpoint corrigé
+      const endpoint = "/addspots";
 
       console.log("Envoi à l'URL:", `${API_URL}${endpoint}`);
 

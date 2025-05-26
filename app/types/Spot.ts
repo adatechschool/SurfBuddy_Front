@@ -1,4 +1,5 @@
 import axios from "axios"; // Librairie qui permet de faire des appels API
+
 export interface Spot {
   id: number;
   spot_name: string;
@@ -23,14 +24,17 @@ export interface Spot_details {
   createdTime: string;
 }
 
+// Utiliser la variable d'environnement
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 const headers = {
   "Content-Type": "application/json",
 };
-// Ajouter cette méthode à votre objet BDD
+
 const SpotService = {
   getSpotById: async (id: string): Promise<Spot_details | null> => {
     try {
-      const response = await axios.get(`http://localhost:8000/${id}`, { headers });
+      const response = await axios.get(`${API_URL}/spots/${id}`, { headers });
       return response.data;
     } catch (error) {
       console.error("Erreur lors de la récupération du spot par ID:", error);
@@ -38,4 +42,5 @@ const SpotService = {
     }
   },
 };
+
 export default SpotService;
