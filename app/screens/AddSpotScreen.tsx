@@ -187,7 +187,7 @@ function AddSpotScreen() {
       console.log("Données envoyées:", JSON.stringify(spotData));
       
       // URL de votre API backend
-      const API_URL = "http://192.168.13.5:8000"; // Votre URL
+      const API_URL = "http://localhost:8000"; // Votre URL
       const endpoint = "/addspots"; // Endpoint corrigé sans le préfixe /spots
       
       console.log("Envoi à l'URL:", `${API_URL}${endpoint}`);
@@ -433,7 +433,7 @@ function AddSpotScreen() {
 
         {/* Boutons d'action */}
         <View style={styles.actionButtons}>
-          <ButtonDelete onPress={() => router.back()} />
+          {/* <ButtonDelete onPress={() => router.back()} /> */}
           <ButtonAddSpot onPress={handleAddSpot} />
         </View>
       </ScrollView>

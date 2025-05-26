@@ -17,7 +17,7 @@ export default function SignIn() {
     
     try {
       // Appel à votre API de backend pour l'authentification
-      const response = await fetch('http://192.168.13.5:8000/login', {
+      const response = await fetch('http://localhost:8000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
