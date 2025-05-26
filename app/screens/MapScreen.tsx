@@ -16,7 +16,7 @@ import style from "@/styles/global";
 const { width, height } = Dimensions.get("window");
 
 // URL de l'API backend
-const API_URL = "http://192.168.1.13:8000";
+const API_URL = "http://192.168.12.202:8000";
 console.log("URL de l'API utilisée:", API_URL);
 
 export default function MapScreen() {

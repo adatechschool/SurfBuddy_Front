@@ -9,34 +9,26 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import style from "../../../styles/global";
-import { useAuth } from "../../context/AuthContext"; // Authentication context
+import { useAuth } from "../../context/AuthContext";
 
-type FocusableField = "name" | "email" | "password" | "confirmPassword" | null;
+type FocusableField = "email" | "password" | null;
 
 const FormContentProfile = () => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [focusedField, setFocusedField] = useState<FocusableField>(null);
 
-  const { login } = useAuth(); // method to update the connected user
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please fill all required fields.");
-      return;
-    }
-
-    // Ensure passwords match before submitting
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
+      Alert.alert("Error", "Please fill all fields.");
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:8000/login', {
+      const response = await fetch('http://192.168.12.202:8000/login', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -46,12 +38,22 @@ const FormContentProfile = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Login failed");
+        
+        if (response.status === 401) {
+          throw new Error("Incorrect email or password.");
+        } else if (response.status === 400) {
+          throw new Error(errorData?.error || "Invalid data.");
+        } else {
+          throw new Error(errorData?.error || "Connection error.");
+        }
       }
 
-      const userData = await response.json();
-      login(userData); // update user context
-      Alert.alert("Success", `Welcome ${userData.alias || name}!`);
+      const responseData = await response.json();
+      
+      // Successful login
+      login(responseData.user);
+      Alert.alert("Success", `Welcome ${responseData.user.alias}!`);
+
     } catch (error) {
       Alert.alert(
         "Login error",
@@ -62,17 +64,6 @@ const FormContentProfile = () => {
 
   return (
     <View style={styles.container}>
-      {/* Name */}
-      <TextInput
-        style={[styles.input, focusedField === "name" && styles.focusedInput]}
-        placeholder="Your alias"
-        placeholderTextColor={style.color.text}
-        value={name}
-        onChangeText={setName}
-        onFocus={() => setFocusedField("name")}
-        onBlur={() => setFocusedField(null)}
-      />
-
       {/* Email */}
       <TextInput
         style={[styles.input, focusedField === "email" && styles.focusedInput]}
@@ -114,44 +105,16 @@ const FormContentProfile = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Confirm password */}
-      <View
-        style={[
-          styles.passwordContainer,
-          focusedField === "confirmPassword" && styles.focusedInput,
-          password !== confirmPassword && confirmPassword.length > 0
-            ? styles.errorBorder
-            : null,
-        ]}
-      >
-        <TextInput
-          style={styles.passwordInput}
-          placeholder="Repeat your password"
-          placeholderTextColor={style.color.text}
-          secureTextEntry={!isPasswordVisible}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          onFocus={() => setFocusedField("confirmPassword")}
-          onBlur={() => setFocusedField(null)}
-        />
-      </View>
-
-      {/* Error if passwords don't match */}
-      {password !== confirmPassword && confirmPassword.length > 0 && (
-        <Text style={styles.errorText}>The passwords don't match!</Text>
-      )}
-
       {/* Login Button */}
       <TouchableOpacity
         style={[
           styles.button,
-          (!email || !password || password !== confirmPassword) &&
-            styles.buttonDisabled,
+          (!email || !password) && styles.buttonDisabled,
         ]}
         onPress={handleLogin}
-        disabled={!email || !password || password !== confirmPassword}
+        disabled={!email || !password}
       >
-        <Text style={styles.buttonText}>Connect</Text>
+        <Text style={styles.buttonText}>Log in</Text>
       </TouchableOpacity>
     </View>
   );
@@ -197,15 +160,6 @@ const styles = StyleSheet.create({
   focusedInput: {
     borderColor: style.color.secondary,
     borderRadius: 5,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginTop: -5,
-    fontFamily: style.fonts.regular,
-  },
-  errorBorder: {
-    borderColor: "red",
   },
   button: {
     marginTop: 10,
