@@ -30,7 +30,7 @@ const headers = {
 const SpotService = {
   getSpotById: async (id: string): Promise<Spot_details | null> => {
     try {
-      const response = await axios.get(`http://localhost:8000/${id}`, { headers });
+      const response = await axios.get(`http://192.168.12.202:8000/${id}`, { headers });
       return response.data;
     } catch (error) {
       console.error("Erreur lors de la récupération du spot par ID:", error);
