@@ -13,7 +13,7 @@ import {
   Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import MapView, { Marker} from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import { useAuth } from "../../context/AuthContext";
 import { router } from "expo-router";
 import FormAddContentSpot from "../addSpotScreen/FormAddContentSpot";
@@ -50,7 +50,6 @@ const destinations: Record<string, string[]> = {
   ],
   "Other...": ["Add another city..."],
 };
-
 
 // Utiliser la variable d'environnement correctement
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -245,22 +244,15 @@ function AddSpotScreen() {
       const result = JSON.parse(responseText);
 
       // Afficher un message de succès
-      Alert.alert(
-        "Success",
-        `Spot "${spotName}" added successfully!`,
-        [
-          {
-            text: "OK",
-            onPress: () => router.back(),
-          },
-        ]
-      );
+      Alert.alert("Success", `Spot "${spotName}" added successfully!`, [
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
+      ]);
     } catch (error) {
       console.error("Error:", error);
-      Alert.alert(
-        "Error",
-        "Impossible to add the spot. Please try again."
-      );
+      Alert.alert("Error", "Impossible to add the spot. Please try again.");
     }
   };
 
@@ -284,10 +276,7 @@ function AddSpotScreen() {
         reader.readAsDataURL(blob);
       });
     } catch (error) {
-      console.error(
-        "Error while converting the image to base64:",
-        error
-      );
+      console.error("Error while converting the image to base64:", error);
       return null;
     }
   };
@@ -331,24 +320,30 @@ function AddSpotScreen() {
   const zoomIn = () => {
     const newZoom = mapZoom * 0.5; // Divise par 2 pour zoomer
     setMapZoom(newZoom);
-    mapRef.current?.animateToRegion({
-      latitude: coordinates.latitude,
-      longitude: coordinates.longitude,
-      latitudeDelta: newZoom,
-      longitudeDelta: newZoom * 0.5,
-    }, 300);
+    mapRef.current?.animateToRegion(
+      {
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        latitudeDelta: newZoom,
+        longitudeDelta: newZoom * 0.5,
+      },
+      300
+    );
   };
 
   // Fonction simple pour dézoomer
   const zoomOut = () => {
     const newZoom = Math.min(mapZoom * 2, 10); // Multiplie par 2 pour dézoomer, max 10
     setMapZoom(newZoom);
-    mapRef.current?.animateToRegion({
-      latitude: coordinates.latitude,
-      longitude: coordinates.longitude,
-      latitudeDelta: newZoom,
-      longitudeDelta: newZoom * 0.5,
-    }, 300);
+    mapRef.current?.animateToRegion(
+      {
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        latitudeDelta: newZoom,
+        longitudeDelta: newZoom * 0.5,
+      },
+      300
+    );
   };
 
   if (!user) {
@@ -369,7 +364,11 @@ function AddSpotScreen() {
             <FormAddImageSpot imageUri={imageUri} />
           ) : (
             <View style={styles.placeholderImage}>
-              <Text style={styles.placeholderText}>No image selected</Text>
+              <Image
+                source={require("../../../assets/images/logo-icon.png")}
+                style={styles.logoPlaceholder}
+                resizeMode="contain"
+              />
             </View>
           )}
           <ButtonLoadImage
@@ -606,7 +605,7 @@ function AddSpotScreen() {
             <TouchableOpacity style={styles.simpleZoomButton} onPress={zoomIn}>
               <Text style={styles.zoomButtonText}>+</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={styles.simpleZoomButton} onPress={zoomOut}>
               <Text style={styles.zoomButtonText}>-</Text>
             </TouchableOpacity>
@@ -662,8 +661,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  placeholderText: {
-    color: "#888",
+  logoPlaceholder: {
+    width: 80,  // Ajustez la taille selon vos besoins
+    height: 80,
+    opacity: 0.6,  // Rend le logo un peu transparent pour indiquer que c'est un placeholder
   },
   formSection: {
     marginBottom: 20,
