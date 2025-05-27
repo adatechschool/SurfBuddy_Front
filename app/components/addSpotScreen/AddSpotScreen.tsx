@@ -246,8 +246,8 @@ function AddSpotScreen() {
 
       // Afficher un message de succès
       Alert.alert(
-        "Succès",
-        `Le spot "${spotName}" a été ajouté avec succès !`,
+        "Success",
+        `Spot "${spotName}" added successfully!`,
         [
           {
             text: "OK",
@@ -256,10 +256,10 @@ function AddSpotScreen() {
         ]
       );
     } catch (error) {
-      console.error("Erreur détaillée:", error);
+      console.error("Error:", error);
       Alert.alert(
-        "Erreur",
-        "Impossible d'ajouter le spot. Veuillez réessayer."
+        "Error",
+        "Impossible to add the spot. Please try again."
       );
     }
   };
@@ -285,7 +285,7 @@ function AddSpotScreen() {
       });
     } catch (error) {
       console.error(
-        "Erreur lors de la conversion de l'image en base64:",
+        "Error while converting the image to base64:",
         error
       );
       return null;
@@ -299,8 +299,8 @@ function AddSpotScreen() {
 
       if (status !== "granted") {
         Alert.alert(
-          "Permission refusée",
-          "L'accès à la localisation est nécessaire pour cette fonctionnalité"
+          "Permission denied",
+          "Access to your localisation is required"
         );
         return;
       }
@@ -314,8 +314,8 @@ function AddSpotScreen() {
       // Ouvrir la carte avec la position actuelle
       setShowMapModal(true);
     } catch (error) {
-      console.error("Erreur lors de l'obtention de la position:", error);
-      Alert.alert("Erreur", "Impossible d'obtenir votre position actuelle");
+      console.error("Error while requesting permission:", error);
+      Alert.alert("Error", "Impossible to get your current location");
     }
   };
 
@@ -596,8 +596,8 @@ function AddSpotScreen() {
                 latitude: coordinates.latitude,
                 longitude: coordinates.longitude,
               }}
-              title="Position sélectionnée"
-              description="Appuyez pour modifier"
+              title="Position selected"
+              description="Push to modify"
             />
           </MapView>
 

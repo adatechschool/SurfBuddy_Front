@@ -152,8 +152,8 @@ const FormContentProfile = () => {
         login(userData);
         
         Alert.alert(
-          "Succès", 
-          responseData.message || "Compte créé avec succès !",
+          "Success", 
+          responseData.message || "Account created successfully!",
           [
             {
               text: "OK",
@@ -164,17 +164,17 @@ const FormContentProfile = () => {
           ]
         );
       } else {
-        throw new Error("Structure de réponse inattendue");
+        throw new Error("Structure awaited");
       }
 
     } catch (error) {
-      console.error("Erreur lors de la création du compte:", error);
+      console.error("Error while creating account:", error);
       
       const errorMessage = error instanceof Error 
         ? error.message 
-        : "Erreur inconnue lors de la création du compte";
+        : "Error unknown while creating account";
       
-      Alert.alert("Erreur", errorMessage);
+      Alert.alert("Error", errorMessage);
     } finally {
       setIsLoading(false); // Fin du chargement
     }
