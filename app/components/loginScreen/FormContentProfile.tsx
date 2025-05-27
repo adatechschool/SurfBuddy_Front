@@ -212,7 +212,7 @@ const FormContentProfile = () => {
       {/* Alias */}
       <TextInput
         style={[styles.input, focusedField === "alias" && styles.focusedInput]}
-        placeholder="Your alias/username"
+        placeholder="Your username"
         placeholderTextColor={style.color.text}
         value={alias}
         onChangeText={setAlias}
@@ -268,7 +268,8 @@ const FormContentProfile = () => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems : "center",
+    marginTop: 55, 
+    alignItems: "center",
     width: "100%",
     padding: 20,
     backgroundColor: style.color.primary,
