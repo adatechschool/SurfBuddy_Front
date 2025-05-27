@@ -26,6 +26,7 @@ const FormContentProfile = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [focusedField, setFocusedField] = useState<FocusableField>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false); // Ajout d'un état de chargement
 
   const { login } = useAuth();
   const router = useRouter();
@@ -45,7 +46,7 @@ const FormContentProfile = () => {
     }
   };
 
-  // Fonction pour convertir l'image en base64 (même que pour les spots)
+  // Fonction pour convertir l'image en base64
   const convertImageToBase64 = async (imageUri: string): Promise<string> => {
     try {
       const response = await fetch(imageUri);
@@ -74,18 +75,35 @@ const FormContentProfile = () => {
       return;
     }
 
+    setIsLoading(true); // Début du chargement
+
     try {
       console.log("Tentative de création d'utilisateur à:", `${API_URL}/adduser`);
       
-      // Préparer les données JSON (sans image pour l'instant)
+      // Convertir l'image en base64 si elle existe
+      let imageBase64 = null;
+      if (selectedImage) {
+        try {
+          imageBase64 = await convertImageToBase64(selectedImage);
+          console.log("Image convertie en base64, taille:", imageBase64.length);
+        } catch (imageError) {
+          console.error("Erreur lors de la conversion de l'image:", imageError);
+          Alert.alert("Attention", "Erreur lors du traitement de l'image. Le compte sera créé sans photo de profil.");
+        }
+      }
+
+      // Préparer les données JSON avec l'image
       const userData = {
         email,
         alias,
         password,
-        // user_picture: null // Pas d'image pour simplifier
+        user_picture: imageBase64 // Utiliser la clé correcte selon votre API
       };
 
-      console.log("Données envoyées:", JSON.stringify(userData));
+      console.log("Données envoyées:", {
+        ...userData,
+        user_picture: userData.user_picture ? `[Image base64 - ${userData.user_picture.length} caractères]` : null
+      });
 
       const response = await fetch(`${API_URL}/adduser`, {
         method: "POST",
@@ -157,12 +175,15 @@ const FormContentProfile = () => {
         : "Erreur inconnue lors de la création du compte";
       
       Alert.alert("Erreur", errorMessage);
+    } finally {
+      setIsLoading(false); // Fin du chargement
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
+      
       {/* Image de profil */}
       <View style={styles.imageSection}>
         <FormImageProfile 
@@ -188,7 +209,7 @@ const FormContentProfile = () => {
         autoCapitalize="none"
       />
 
-      {/* Alias - Nouveau champ */}
+      {/* Alias */}
       <TextInput
         style={[styles.input, focusedField === "alias" && styles.focusedInput]}
         placeholder="Your alias/username"
@@ -228,16 +249,18 @@ const FormContentProfile = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Login Button */}
+      {/* Create Account Button */}
       <TouchableOpacity
         style={[
           styles.button,
-          (!email || !alias || !password) && styles.buttonDisabled,
+          (!email || !alias || !password || isLoading) && styles.buttonDisabled,
         ]}
         onPress={handleLogin}
-        disabled={!email || !alias || !password}
+        disabled={!email || !alias || !password || isLoading}
       >
-        <Text style={styles.buttonText}>Create Account</Text>
+        <Text style={styles.buttonText}>
+          {isLoading ? "Creating Account..." : "Create Account"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -317,6 +340,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 6,
     alignItems: "center",
+    width: "100%",
   },
   buttonDisabled: {
     backgroundColor: "#999",
