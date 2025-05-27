@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import ProfileImage from '../components/profileScreen/ProfileImage'; 
-import ProfileContent from '../components/profileScreen/ProfileContent'; 
-import ButtonUpdate from '../components/commons/buttons/ButtonUpdate'; 
-import ButtonDelete from '../components/commons/buttons/ButtonDelete';
-import globalStyle from '../../styles/global'; 
-import { useAuth } from '../context/AuthContext'; // Authentication context
+import ProfileImage from '../profileScreen/ProfileImage'; 
+import ProfileContent from '../profileScreen/ProfileContent'; 
+import globalStyle from '../../../styles/global'; 
+import { useAuth } from '../../context/AuthContext'; // Authentication context
 import { router } from 'expo-router';
 
 const ProfileScreen = () => {
@@ -26,11 +24,6 @@ const ProfileScreen = () => {
       </Text> 
       <ProfileImage />
       <ProfileContent />
-
-      <View style={styles.buttonContainer}>
-        <ButtonUpdate onPress={() => console.log('Update')} />
-        <ButtonDelete onPress={() => console.log('Delete')} />
-      </View>
     </ScrollView>
   );
 };

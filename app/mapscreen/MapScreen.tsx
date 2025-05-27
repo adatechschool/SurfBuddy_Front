@@ -1,22 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
   Dimensions,
   ActivityIndicator,
   Text,
+  TouchableOpacity,
 } from "react-native";
-import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Callout, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import * as Location from "expo-location";
 import { Spot } from "../types/Spot";
 import style from "@/styles/global";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const { width, height } = Dimensions.get("window");
 
 // URL de l'API backend
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 console.log("URL de l'API utilisée:", API_URL);
 
 export default function MapScreen() {
@@ -24,6 +27,14 @@ export default function MapScreen() {
   const [spotsWithCoordinates, setSpotsWithCoordinates] = useState<Spot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentRegion, setCurrentRegion] = useState<Region>({
+    latitude: 46.227638,
+    longitude: 2.213749,
+    latitudeDelta: 50,
+    longitudeDelta: 50,
+  });
+  
+  const mapRef = useRef<MapView>(null);
   const router = useRouter();
 
   // Coordonnées initiales centrées sur l'Europe
@@ -32,6 +43,56 @@ export default function MapScreen() {
     longitude: 2.213749,
     latitudeDelta: 50,
     longitudeDelta: 50,
+  };
+
+  // Fonction pour zoomer
+  const zoomIn = () => {
+    const newRegion = {
+      ...currentRegion,
+      latitudeDelta: currentRegion.latitudeDelta * 0.5,
+      longitudeDelta: currentRegion.longitudeDelta * 0.5,
+    };
+    setCurrentRegion(newRegion);
+    mapRef.current?.animateToRegion(newRegion, 300);
+  };
+
+  // Fonction pour dézoomer
+  const zoomOut = () => {
+    const newRegion = {
+      ...currentRegion,
+      latitudeDelta: Math.min(currentRegion.latitudeDelta * 2, 180),
+      longitudeDelta: Math.min(currentRegion.longitudeDelta * 2, 180),
+    };
+    setCurrentRegion(newRegion);
+    mapRef.current?.animateToRegion(newRegion, 300);
+  };
+
+  // Fonction pour centrer sur la position actuelle
+  const centerOnUserLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission de localisation refusée");
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const newRegion = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      };
+      setCurrentRegion(newRegion);
+      mapRef.current?.animateToRegion(newRegion, 1000);
+    } catch (error) {
+      console.error("Erreur lors de la récupération de la position:", error);
+    }
+  };
+
+  // Fonction appelée quand la région change
+  const onRegionChangeComplete = (region: Region) => {
+    setCurrentRegion(region);
   };
 
   useEffect(() => {
@@ -66,7 +127,7 @@ export default function MapScreen() {
 
         // Traiter les spots pour ajouter des coordonnées si nécessaire
         const processedSpots = await Promise.all(
-          data.map(async (spot) => {
+          data.map(async (spot: Spot) => {
             // Vérifier si le spot a déjà des coordonnées valides
             const existingCoordinates = getSpotCoordinates(spot);
             if (existingCoordinates) {
@@ -153,10 +214,10 @@ export default function MapScreen() {
     if (!spot) return null;
 
     // Vérifier d'abord les coordonnées traitées
-    if (spot.processedLatitude && spot.processedLongitude) {
+    if (spot.latitude && spot.longitude) {
       return {
-        latitude: spot.processedLatitude,
-        longitude: spot.processedLongitude,
+        latitude: spot.latitude,
+        longitude: spot.longitude,
       };
     }
 
@@ -202,14 +263,18 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       <MapView
+        ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={initialRegion}
+        onRegionChangeComplete={onRegionChangeComplete}
+        showsUserLocation={true}
+        showsMyLocationButton={false} // On désactive le bouton par défaut
       >
         {/* Marqueur de test */}
         <Marker
           coordinate={{
-            latitude: 43.4832, // Coordonnées de Biarritz
+            latitude: 43.4832,
             longitude: -1.5586,
           }}
           title="Test Marker"
@@ -221,11 +286,7 @@ export default function MapScreen() {
           if (!coordinates) return null;
 
           console.log(
-            "Showing the spot on the map:",
-            spot.id,
-            spot.spot_name,
-            coordinates.latitude,
-            coordinates.longitude
+            `Showing the spot on the map: ${spot.id} ${spot.spot_name} ${coordinates.latitude} ${coordinates.longitude}`
           );
 
           return (
@@ -236,26 +297,19 @@ export default function MapScreen() {
               description={`${spot.city}, ${spot.country}`}
               onCalloutPress={() => handleMarkerPress(spot.id)}
             >
-              <Callout tooltip>
+              <Callout>
                 <View style={styles.calloutContainer}>
                   {spot.spot_picture && (
                     <Image
-                      source={{
-                        uri: spot.spot_picture.startsWith("data:image")
-                          ? spot.spot_picture
-                          : `data:image/jpeg;base64,${spot.spot_picture}`,
-                      }}
+                      source={{ uri: `data:image/jpeg;base64,${spot.spot_picture}` }}
                       style={styles.calloutImage}
                     />
                   )}
                   <Text style={styles.calloutTitle}>
                     {spot.spot_name || "Surf spot"}
                   </Text>
-                  <Text
-                    style={styles.calloutSubtitle}
-                  >{`${spot.city}, ${spot.country}`}</Text>
                   <Text style={styles.calloutDescription}>
-                    {spot.difficulty ? `Difficulty: ${spot.difficulty}` : ""}
+                    {spot.city}, {spot.country}
                   </Text>
                 </View>
               </Callout>
@@ -263,6 +317,21 @@ export default function MapScreen() {
           );
         })}
       </MapView>
+
+      {/* Contrôles de zoom */}
+      <View style={styles.zoomControls}>
+        <TouchableOpacity style={styles.zoomButton} onPress={zoomIn}>
+          <Icon name="plus" size={20} color={style.color.text} />
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.zoomButton} onPress={zoomOut}>
+          <Icon name="minus" size={20} color={style.color.text} />
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.locationButton} onPress={centerOnUserLocation}>
+          <Icon name="location-arrow" size={20} color={style.color.text} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -270,17 +339,21 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: style.color.background,
   },
   map: {
-    width: "100%",
-    height: "100%",
+    width: width,
+    height: height,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: style.color.background,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: style.color.text,
   },
   errorContainer: {
     flex: 1,
@@ -296,38 +369,59 @@ const styles = StyleSheet.create({
   },
   calloutContainer: {
     width: 200,
-    backgroundColor: "white",
-    borderRadius: 10,
     padding: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   calloutImage: {
     width: "100%",
     height: 100,
-    borderRadius: 5,
-    marginBottom: 5,
+    borderRadius: 8,
+    marginBottom: 8,
   },
   calloutTitle: {
-    fontWeight: "bold",
     fontSize: 16,
-    marginBottom: 2,
-  },
-  calloutSubtitle: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 5,
+    fontWeight: "bold",
+    color: style.color.text,
+    marginBottom: 4,
   },
   calloutDescription: {
-    fontSize: 12,
-    color: "#888",
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
+    fontSize: 14,
     color: style.color.text,
+    opacity: 0.7,
+  },
+  // Nouveaux styles pour les contrôles de zoom
+  zoomControls: {
+    position: "absolute",
+    right: 20,
+    top: 100,
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  zoomButton: {
+    backgroundColor: style.color.primary,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  locationButton: {
+    backgroundColor: style.color.secondary,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });

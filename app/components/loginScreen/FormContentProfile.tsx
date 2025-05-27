@@ -8,8 +8,11 @@ import {
   Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import * as ImagePicker from "expo-image-picker";
 import style from "../../../styles/global";
 import { useAuth } from "../../context/AuthContext";
+import FormImageProfile from "./FormImageProfile";
+import { useRouter } from "expo-router";
 
 // Utiliser la variable d'environnement
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -22,61 +25,156 @@ const FormContentProfile = () => {
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [focusedField, setFocusedField] = useState<FocusableField>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const { login } = useAuth();
+  const router = useRouter();
+
+  // Fonction pour sélectionner une image
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 0.7,
+      aspect: [1, 1], // Format carré pour la photo de profil
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+    } else {
+      Alert.alert("Aucune image sélectionnée", "Vous n'avez pas sélectionné d'image.");
+    }
+  };
+
+  // Fonction pour convertir l'image en base64 (même que pour les spots)
+  const convertImageToBase64 = async (imageUri: string): Promise<string> => {
+    try {
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result as string;
+          // Enlever le préfixe "data:image/...;base64,"
+          const base64Data = base64String.split(',')[1];
+          resolve(base64Data);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error("Erreur lors de la conversion en base64:", error);
+      throw error;
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !alias || !password) {
-      Alert.alert("Error", "Please fill all fields (email, alias, and password).");
+      Alert.alert("Erreur", "Veuillez remplir tous les champs");
       return;
     }
 
     try {
-      console.log("Tentative de connexion à:", `${API_URL}/adduser`);
+      console.log("Tentative de création d'utilisateur à:", `${API_URL}/adduser`);
       
+      // Préparer les données JSON (sans image pour l'instant)
+      const userData = {
+        email,
+        alias,
+        password,
+        // user_picture: null // Pas d'image pour simplifier
+      };
+
+      console.log("Données envoyées:", JSON.stringify(userData));
+
       const response = await fetch(`${API_URL}/adduser`, {
-        method: 'POST',
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          email, 
-          alias, 
-          password 
-        }),
+        body: JSON.stringify(userData),
       });
 
       console.log("Statut de la réponse:", response.status);
 
+      // Lire le contenu de la réponse
+      const responseText = await response.text();
+      console.log("Contenu brut de la réponse:", responseText);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+        let errorMessage = "Erreur lors de la création du compte";
         
-        if (response.status === 401) {
-          throw new Error("Incorrect email or password.");
-        } else if (response.status === 400) {
-          throw new Error(errorData?.error || "Invalid data.");
-        } else {
-          throw new Error(errorData?.error || "Connection error.");
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch (parseError) {
+          console.log("Impossible de parser la réponse d'erreur:", parseError);
+          errorMessage = `Erreur ${response.status}: ${response.statusText}`;
         }
+        
+        throw new Error(errorMessage);
       }
 
-      const responseData = await response.json();
-      
-      // Successful login
-      login(responseData.user);
-      Alert.alert("Success", `Welcome ${responseData.user.alias}!`);
+      // Parser la réponse JSON
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("Erreur lors du parsing de la réponse:", parseError);
+        throw new Error("Réponse invalide du serveur");
+      }
+
+      console.log("Données de réponse parsées:", responseData);
+
+      // Vérifier la structure de la réponse
+      if (responseData.user) {
+        const userData = responseData.user;
+        
+        // Connecter automatiquement l'utilisateur
+        login(userData);
+        
+        Alert.alert(
+          "Succès", 
+          responseData.message || "Compte créé avec succès !",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                router.replace("/");
+              }
+            }
+          ]
+        );
+      } else {
+        throw new Error("Structure de réponse inattendue");
+      }
 
     } catch (error) {
-      console.error("Erreur de connexion détaillée:", error);
-      Alert.alert(
-        "Login error",
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
+      console.error("Erreur lors de la création du compte:", error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Erreur inconnue lors de la création du compte";
+      
+      Alert.alert("Erreur", errorMessage);
     }
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Create Account</Text>
+      {/* Image de profil */}
+      <View style={styles.imageSection}>
+        <FormImageProfile 
+          imgSource={require("../../../assets/images/logo-icon.png")}
+          selectedImage={selectedImage}
+        />
+        <TouchableOpacity style={styles.imageButton} onPress={pickImageAsync}>
+          <Icon name="camera" size={16} color="white" />
+          <Text style={styles.imageButtonText}>Choose a photo</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Email */}
       <TextInput
         style={[styles.input, focusedField === "email" && styles.focusedInput]}
@@ -147,6 +245,7 @@ const FormContentProfile = () => {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems : "center",
     width: "100%",
     padding: 20,
     backgroundColor: style.color.primary,
@@ -156,6 +255,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
+  },
+  imageSection: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  imageButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: style.color.secondary,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginTop: 10,
+  },
+  imageButtonText: {
+    color: "white",
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: "500",
   },
   input: {
     width: "100%",
@@ -185,6 +303,13 @@ const styles = StyleSheet.create({
   focusedInput: {
     borderColor: style.color.secondary,
     borderRadius: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textTransform: 'uppercase',
+    color: '#006A71',
   },
   button: {
     marginTop: 10,

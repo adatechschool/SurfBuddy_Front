@@ -1,43 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import profile from "../../../profile.json"; // Assure-toi du bon chemin d'importation
 import { useAuth } from "../../context/AuthContext";
-
-const API_URL = "process.env.EXPO_PUBLIC_API_URL";
+import globalStyle from "../../../styles/global";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const ProfileContent = () => {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
 
-  useEffect(() => {
-    if (user?.id) {
-      fetch(`${API_URL}/users/${user.id}`)
-        .then((response) => response.json())
-        .then((data) => setProfile(data))
-        .catch((error) =>
-          console.error("Error while charging profile:", error)
-        );
-    }
-  }, [user]);
-
-  if (!profile) return <Text>Charging...</Text>;
+  // Utiliser directement les données du contexte d'authentification
+  const alias = user?.alias || "Utilisateur";
+  const email = user?.email || "email@example.com";
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Alias:</Text>
-      <View style={styles.block}>
-        <Text style={styles.value}>{profile.alias}</Text>
+      {/* Carte Nom d'utilisateur */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Icon name="user" size={20} color={globalStyle.color.secondary} />
+          <Text style={styles.cardTitle}>Username</Text>
+          <Text style={styles.cardValue}>{alias}</Text>
+        </View>
       </View>
 
-      <Text style={styles.label}>Email:</Text>
-      <View style={styles.block}>
-        <Text style={styles.value}>{profile.email}</Text>
-      </View>
-
-      <Text style={styles.label}>Password:</Text>
-      <View style={styles.block}>
-        <Text style={styles.value}>********</Text>
-        {/* Remplace le texte par des étoiles */}
+      {/* Carte Email */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Icon name="envelope" size={20} color={globalStyle.color.secondary} />
+          <Text style={styles.cardTitle}>Email</Text>
+        </View>
+        <Text style={styles.cardValue}>{email}</Text>
       </View>
     </View>
   );
@@ -45,29 +36,41 @@ const ProfileContent = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
     width: "100%",
+    marginTop: 20,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5, // Ajoute de l'espace sous les titres
-    color: "#333",
-  },
-  block: {
-    backgroundColor: "#F2EFE7", // Couleur légèrement plus claire pour un effet visible
-    padding: 14,
-    borderRadius: 8,
-    marginBottom: 15,
-    shadowColor: "#000", // Ombre légère
+  card: {
+    backgroundColor: globalStyle.color.primary,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, // Effet d'ombre sur Android
+    elevation: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: globalStyle.color.secondary,
   },
-  value: {
-    fontSize: 15,
-    color: "#444",
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: globalStyle.color.secondary,
+    marginLeft: 10,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  cardValue: {
+    fontSize: 16,
+    color: globalStyle.color.text,
+    fontFamily: globalStyle.fonts.regular,
+    fontWeight: "500",
+    marginLeft: 30, // Aligné avec le titre
   },
 });
 

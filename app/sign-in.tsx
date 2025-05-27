@@ -11,6 +11,8 @@ import { useAuth } from "./context/AuthContext";
 import globalStyle from "../styles/global";
 import FormContentLogin from "./components/commons/FormContentLogin";
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export default function SignIn() {
   const { login } = useAuth();
 
@@ -22,8 +24,10 @@ export default function SignIn() {
     setError("");
 
     try {
-      // Appel à votre API de backend pour l'authentification
-      const response = await fetch('process.env.EXPO_PUBLIC_API_URL/login', {
+      console.log("Tentative de connexion à:", `${API_URL}/login`);
+      console.log("Données envoyées:", JSON.stringify({ email, password }));
+      
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -31,18 +35,36 @@ export default function SignIn() {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log("Statut de la réponse:", response.status);
+
       if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ message: "Login failed" }));
-        throw new Error(errorData.message || "Invalid credentials");
+        const errorData = await response.json().catch(() => null);
+        console.log("Données d'erreur:", errorData);
+        
+        if (response.status === 401) {
+          throw new Error(errorData?.message || "Email ou mot de passe incorrect.");
+        } else if (response.status === 400) {
+          throw new Error(errorData?.message || "Données invalides.");
+        } else if (response.status === 404) {
+          throw new Error("Utilisateur non trouvé.");
+        } else {
+          throw new Error(errorData?.message || "Erreur de connexion.");
+        }
       }
 
-      const userData = await response.json();
+      const responseData = await response.json();
+      console.log("Données de réponse:", responseData);
+
+      // Votre API retourne maintenant : { message: "...", user: { id, alias, email, profile_picture } }
+      if (!responseData.user) {
+        throw new Error("Structure de réponse invalide - utilisateur manquant");
+      }
+
+      const userData = responseData.user;
 
       // Vérifier que les données utilisateur sont valides
       if (!userData || !userData.id || !userData.email) {
-        throw new Error("Invalid user data received");
+        throw new Error("Données utilisateur invalides reçues");
       }
 
       // Mettre à jour le contexte avec les données utilisateur
@@ -52,9 +74,9 @@ export default function SignIn() {
       router.replace("/");
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
+        err instanceof Error ? err.message : "Échec de la connexion. Veuillez réessayer.";
       setError(errorMessage);
-      console.error(err);
+      console.error("Erreur de connexion:", err);
     } finally {
       setIsLoading(false);
     }
@@ -74,10 +96,10 @@ export default function SignIn() {
 
       <TouchableOpacity
         style={styles.registerLink}
-        onPress={() => router.push("/screens/LoginScreen")}
+        onPress={() => router.push("/components/loginScreen/FormContentProfile")}
       >
         <Text style={styles.registerText}>
-          No account yet?
+          No account yet?{" "}
           <Text
             style={{ color: globalStyle.color.secondary, fontWeight: "bold" }}
           >

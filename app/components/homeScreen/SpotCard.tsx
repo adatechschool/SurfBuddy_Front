@@ -15,7 +15,7 @@ const SpotCard = ({ spot }: SpotCardProps) => {
 
   const handlePress = () => {
     router.push({
-      pathname: '/screens/DetailsScreen',
+      pathname: '/components/detailsScreen/DetailsScreen',
       params: { id: spot.id }
     });
   };

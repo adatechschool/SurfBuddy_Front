@@ -41,7 +41,7 @@ const FormContentLogin = ({ onSubmit }: FormContentLoginProps) => {
     const isPasswordValid = validatePassword();
     
     if (isEmailValid && isPasswordValid && onSubmit) {
-      onSubmit(email, password); // Appelle la fonction onSubmit qui est passée en prop
+      onSubmit(email, password);
     }
   };
 
@@ -86,7 +86,7 @@ const FormContentLogin = ({ onSubmit }: FormContentLoginProps) => {
           width: '100%',
           marginTop: 10
         }]}
-        onPress={handleSubmit} // Assure-toi que cette fonction appelle handleSubmit
+        onPress={handleSubmit}
       >
         <Text style={{ color: '#006A71', fontWeight: 'bold' }}>Login</Text>
       </TouchableOpacity>
