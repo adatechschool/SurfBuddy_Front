@@ -162,6 +162,7 @@ const FormContentProfile = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Create Account</Text>
       {/* Image de profil */}
       <View style={styles.imageSection}>
         <FormImageProfile 
@@ -244,6 +245,7 @@ const FormContentProfile = () => {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems : "center",
     width: "100%",
     padding: 20,
     backgroundColor: style.color.primary,
@@ -301,6 +303,13 @@ const styles = StyleSheet.create({
   focusedInput: {
     borderColor: style.color.secondary,
     borderRadius: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textTransform: 'uppercase',
+    color: '#006A71',
   },
   button: {
     marginTop: 10,
