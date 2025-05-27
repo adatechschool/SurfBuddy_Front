@@ -170,7 +170,7 @@ const FormContentProfile = () => {
         />
         <TouchableOpacity style={styles.imageButton} onPress={pickImageAsync}>
           <Icon name="camera" size={16} color="white" />
-          <Text style={styles.imageButtonText}>Choisir une photo</Text>
+          <Text style={styles.imageButtonText}>Choose a photo</Text>
         </TouchableOpacity>
       </View>
 

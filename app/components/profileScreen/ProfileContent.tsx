@@ -17,7 +17,7 @@ const ProfileContent = () => {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Icon name="user" size={20} color={globalStyle.color.secondary} />
-          <Text style={styles.cardTitle}>Nom d'utilisateur</Text>
+          <Text style={styles.cardTitle}>Username</Text>
           <Text style={styles.cardValue}>{alias}</Text>
         </View>
       </View>
